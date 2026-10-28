@@ -256,6 +256,7 @@ body.story-page #prog{display:none}
   font-size:clamp(15px,1.1vw,18px);font-weight:600;line-height:1.6;color:var(--s-ink);max-width:46ch}
 .story-body .story-text p{font-size:clamp(15px,1.05vw,17px);line-height:1.75;color:var(--s-ink2);max-width:46ch;margin:0}
 .story-body .story-text p+p{margin-top:10px}
+.story-body .story-text strong{color:var(--s-ink);font-weight:700}
 .story-body .story-text a{color:var(--s-red);text-decoration:none;border-bottom:1px solid rgba(192,57,43,.45);transition:border-color .2s}
 .story-body .story-text a:hover{border-bottom-color:var(--s-red)}
 
