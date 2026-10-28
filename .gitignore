@@ -1,0 +1,8 @@
+# Hugo 构建产物（由 hugo 命令生成，无需提交）
+/public/
+/resources/
+/.hugo_build.lock
+
+# 旧版 Docusaurus 产物与设计原型（已由 Hugo 取代，仅本地留存）
+/_legacy/
+/design-demos/
