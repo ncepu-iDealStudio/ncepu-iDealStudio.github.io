@@ -37,12 +37,15 @@ nav.menus a.active{background:var(--accent);color:#fff}
 .star-pill{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:13px;color:var(--ink-2);transition:.18s}
 .star-pill:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
 .star-pill .ic{width:16px;height:16px;flex:none}
-.star-pill .ic.gitee{display:inline-flex;align-items:center;justify-content:center;border-radius:4px;background:#c71d23;color:#fff;font-family:Sora,sans-serif;font-weight:700;font-size:11px;line-height:1}
+.star-pill .ic svg{width:100%;height:100%;display:block}
+.star-pill .ic.gitee{color:#c71d23}
 .star-pill .star{color:#f5a623;font-size:13px;line-height:1}
 .star-pill b{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;color:var(--ink);line-height:1}
+.ic-svg{width:16px;height:16px;flex:none;vertical-align:-3px}
 .issuelinks{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}
 .issuelinks .ibtn{display:inline-flex;align-items:center;gap:8px;font-family:Sora;font-weight:600;font-size:14.5px;color:#fff;background:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:11px 18px;transition:.18s}
 .issuelinks .ibtn:hover{background:var(--accent-deep);border-color:var(--accent-deep);transform:translateY(-2px);box-shadow:0 10px 24px rgba(14,27,51,.12)}
+.issuelinks .ibtn svg{width:16px;height:16px;flex:none;display:block}
 
 .progress{position:fixed;top:var(--navH);left:0;height:2px;width:0;background:var(--accent);z-index:61}
 
@@ -253,6 +256,8 @@ body.story-page #prog{display:none}
   font-size:clamp(15px,1.1vw,18px);font-weight:600;line-height:1.6;color:var(--s-ink);max-width:46ch}
 .story-body .story-text p{font-size:clamp(15px,1.05vw,17px);line-height:1.75;color:var(--s-ink2);max-width:46ch;margin:0}
 .story-body .story-text p+p{margin-top:10px}
+.story-body .story-text a{color:var(--s-red);text-decoration:none;border-bottom:1px solid rgba(192,57,43,.45);transition:border-color .2s}
+.story-body .story-text a:hover{border-bottom-color:var(--s-red)}
 
 .story-media,.story-body{opacity:0;transform:translateY(40px);transition:opacity .85s cubic-bezier(.2,.7,.2,1),transform .85s cubic-bezier(.2,.7,.2,1)}
 .story-node.in .story-media,.story-node.in .story-body{opacity:1;transform:none}
