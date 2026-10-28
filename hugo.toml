@@ -1,8 +1,8 @@
 baseURL = 'https://ncepu-idealstudio.github.io/'
-languageCode = 'zh-cn'
+locale = 'zh-cn'
 title = 'Fast-Https 文档'
 summaryLength = 24
-disableKinds = ["taxonomy", "taxonomyTerm"]
+disableKinds = ["taxonomy"]
 
 [outputs]
   home = ["HTML", "SEARCH"]

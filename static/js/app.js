@@ -158,4 +158,34 @@
       if (input) input.blur();
     }
   });
+
+  // 了解我们：滚动故事线
+  var storyScrolly = document.getElementById('storyScrolly');
+  if (storyScrolly) {
+    var storyRail = document.getElementById('storyRail');
+    var storyProgress = document.getElementById('storyProgress');
+    var storyHud = document.getElementById('storyHud');
+    var storyObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          if (e.target.dataset.year && storyHud) {
+            storyHud.innerHTML = e.target.dataset.year + '<small>CURRENT</small>';
+          }
+        }
+      });
+    }, { threshold: 0.35 });
+    document.querySelectorAll('.story-node').forEach(function (n) { storyObs.observe(n); });
+    function storyOnScroll() {
+      var r = storyScrolly.getBoundingClientRect();
+      var total = storyScrolly.offsetHeight - window.innerHeight;
+      var passed = Math.min(Math.max(-r.top, 0), Math.max(total, 1));
+      var pct = total > 0 ? passed / total : 0;
+      if (storyRail) storyRail.style.height = (passed + window.innerHeight * 0.5) + 'px';
+      if (storyProgress) storyProgress.style.width = (pct * 100) + '%';
+    }
+    window.addEventListener('scroll', storyOnScroll, { passive: true });
+    window.addEventListener('resize', storyOnScroll);
+    storyOnScroll();
+  }
 })();

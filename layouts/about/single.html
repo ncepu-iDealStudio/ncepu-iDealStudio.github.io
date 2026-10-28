@@ -1,0 +1,54 @@
+{{ define "main" }}
+<div class="story">
+  <div class="story-progress" id="storyProgress"></div>
+  <div class="story-hud" id="storyHud">开始<small>CURRENT</small></div>
+
+  <header class="story-hero">
+    <div class="story-top"><span>Fast-Https 团队发展报告</span><span>华北电力大学 · iDealStudio</span></div>
+    <div class="story-years">2019<em>—</em>至今</div>
+    <h1>一条 Go 语言产品线的成长</h1>
+    <p class="story-sub">这是一份属于华北电力大学 iDealStudio 工作室的成长记录：2019 年，一支 Go 语言学习小组起步；2020 年做出第一个开源项目；2023 年 Fast-Https 正式立项；2024 年发布 1.0.0，并入驻华为 openEuler 社区。向下滚动，按时间顺序看这条产品线如何一步步长出来。</p>
+    <div class="story-facts">
+      <div><b>2019</b><span>起点</span></div>
+      <div><b>11</b><span>关键节点</span></div>
+      <div><b>1.0.0</b><span>首个正式版</span></div>
+      <div><b>openEuler</b><span>开源社区</span></div>
+    </div>
+    <div class="story-hint"><span class="dot"></span>向下滚动 · 开始</div>
+  </header>
+
+  <main class="story-scrolly" id="storyScrolly">
+    <div class="story-rail" id="storyRail"></div>
+    {{ range .Site.RegularPages.ByWeight }}
+      {{ if eq .Section "timeline" }}
+      <section class="story-node" data-year="{{ .Params.year }}">
+        <figure class="story-media">
+          <img src="{{ .Params.image }}" alt="{{ .Title }}" loading="lazy">
+          <figcaption class="story-cap">{{ .Params.caption }}</figcaption>
+        </figure>
+        <div class="story-body">
+          <div class="story-year">{{ .Params.year }}</div>
+          <div class="story-tag">{{ .Params.tag }}</div>
+          <h2>{{ .Title }}</h2>
+          {{ with .Params.lead }}<p class="story-lead">{{ . }}</p>{{ end }}
+          <div class="story-text">{{ .Content }}</div>
+        </div>
+      </section>
+      {{ end }}
+    {{ end }}
+  </main>
+
+  <footer class="story-end">
+    <div class="story-year">开始 → 至今</div>
+    <h2>故事还在继续</h2>
+    <p>Fast-Https 由华北电力大学 iDealStudio 工作室发起并维护。欢迎在 Gitee 与 GitHub 上关注、提问或参与贡献。</p>
+    <div class="issuelinks">
+      <a class="ibtn" href="https://gitee.com/ncepu-bj/fast-https" target="_blank" rel="noopener">Gitee 仓库</a>
+      <a class="ibtn" href="https://github.com/ncepu-iDealStudio/Fast-Https" target="_blank" rel="noopener">GitHub 仓库</a>
+      <a class="ibtn" href="https://gitee.com/ncepu-bj/fast-https/issues" target="_blank" rel="noopener">提交问题</a>
+    </div>
+    <div class="story-foot">华北电力大学 iDealStudio 工作室 · Fast-Https</div>
+  </footer>
+</div>
+{{ partial "footer.html" . }}
+{{ end }}

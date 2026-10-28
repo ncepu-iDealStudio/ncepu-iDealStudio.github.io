@@ -1,0 +1,7 @@
+{{ define "main" }}
+<div class="page-wrap"><article class="doc doc-standalone">
+  <h1>{{ .Title }}</h1>
+  <ul>{{ range .Pages }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}</ul>
+</article></div>
+{{ partial "footer.html" . }}
+{{ end }}
