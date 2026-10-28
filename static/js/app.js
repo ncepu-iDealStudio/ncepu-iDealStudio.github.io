@@ -1,4 +1,5 @@
 (function () {
+  // 阅读进度
   var prog = document.getElementById('prog');
   var col = document.getElementById('doccol');
   var scroller = col || window;
@@ -10,6 +11,49 @@
   }
   scroller.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  // 实时 Star 数
+  function getJSON(u) {
+    var ctrl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 6000);
+    return fetch(u, ctrl ? { signal: ctrl.signal } : undefined)
+      .then(function (r) { clearTimeout(timer); return r.ok ? r.json() : null; })
+      .catch(function () { clearTimeout(timer); return null; });
+  }
+  function fmtNum(n) {
+    return n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(n);
+  }
+  function parseShields(v) {
+    if (v == null) return null;
+    var m = String(v).trim().match(/^([\d.]+)\s*([kKmM]?)$/);
+    if (!m) return null;
+    var n = parseFloat(m[1]);
+    var suf = m[2].toLowerCase();
+    if (suf === 'k') n *= 1000;
+    else if (suf === 'm') n *= 1000000;
+    return isNaN(n) ? null : Math.round(n);
+  }
+  function bindStars(id, sources) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    (function next(i) {
+      if (i >= sources.length) return;
+      var s = sources[i];
+      getJSON(s.url).then(function (d) {
+        var n = s.pick(d);
+        if (typeof n === 'number' && !isNaN(n)) { el.textContent = fmtNum(n); }
+        else { next(i + 1); }
+      });
+    })(0);
+  }
+  bindStars('gitee-stars', [
+    { url: 'https://gitee.com/api/v5/repos/ncepu-bj/fast-https', pick: function (d) { return d && typeof d.stargazers_count === 'number' ? d.stargazers_count : null; } }
+  ]);
+  bindStars('github-stars', [
+    { url: 'https://img.shields.io/github/stars/ncepu-iDealStudio/Fast-Https.json', pick: function (d) { return d ? parseShields(d.value) : null; } },
+    { url: 'https://api.github.com/repos/ncepu-iDealStudio/Fast-Https', pick: function (d) { return d && typeof d.stargazers_count === 'number' ? d.stargazers_count : null; } },
+    { url: 'https://ungh.cc/repos/ncepu-iDealStudio/Fast-Https', pick: function (d) { return d && d.repo && typeof d.repo.stars === 'number' ? d.repo.stars : null; } }
+  ]);
 
   // TOC scrollspy
   var toc = document.getElementById('TableOfContents');
@@ -35,4 +79,83 @@
       targets.forEach(function (t) { obs.observe(t); });
     }
   }
+
+  // 文档搜索（顶栏内联，结果下拉）
+  var input = document.getElementById('searchInput');
+  var panel = document.getElementById('searchResults');
+  var idx = null, idxPromise = null;
+
+  function loadIndex() {
+    if (idxPromise) return idxPromise;
+    idxPromise = fetch('/search-index.json').then(function (r) { return r.json(); })
+      .then(function (d) { idx = d; return d; });
+    return idxPromise;
+  }
+  function hidePanel() {
+    if (panel) { panel.hidden = true; panel.innerHTML = ''; }
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
+  }
+  function snippet(text, q) {
+    var i = (text || '').toLowerCase().indexOf(q.toLowerCase());
+    if (i < 0) return (text || '').slice(0, 80);
+    var s = Math.max(0, i - 30);
+    return (s > 0 ? '…' : '') + (text || '').slice(s, s + 90) + '…';
+  }
+  function render(q) {
+    if (!idx || !panel) return;
+    q = (q || '').trim();
+    if (!q) { hidePanel(); return; }
+    var terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+    var out = [];
+    idx.forEach(function (p) {
+      var t = (p.title || '').toLowerCase();
+      var x = (p.text || '').toLowerCase();
+      var hit = terms.every(function (term) { return t.indexOf(term) >= 0 || x.indexOf(term) >= 0; });
+      if (hit) {
+        var score = terms.reduce(function (a, term) {
+          return a + (t.indexOf(term) >= 0 ? 10 : 0) + (x.indexOf(term) >= 0 ? 1 : 0);
+        }, 0);
+        out.push({ p: p, score: score });
+      }
+    });
+    out.sort(function (a, b) { return b.score - a.score; });
+    if (!out.length) {
+      panel.innerHTML = '<div class="nav-search-empty">没有匹配的文档</div>';
+      panel.hidden = false;
+      return;
+    }
+    panel.innerHTML = out.slice(0, 8).map(function (o) {
+      var p = o.p;
+      return '<a href="' + p.url + '"><span class="t">' + escapeHtml(p.title) +
+        '</span><span class="s">' + escapeHtml(snippet(p.text || '', q)) + '</span></a>';
+    }).join('');
+    panel.hidden = false;
+  }
+  if (input) {
+    input.addEventListener('focus', function () {
+      loadIndex().then(function () { if (input.value.trim()) render(input.value); }).catch(function () {});
+    });
+    input.addEventListener('input', function () {
+      loadIndex().then(function () { render(input.value); }).catch(function () {});
+    });
+  }
+  if (panel) {
+    panel.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('a')) hidePanel();
+    });
+  }
+  document.addEventListener('click', function (e) {
+    if (panel && !(e.target.closest && e.target.closest('.nav-search'))) hidePanel();
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (input) { input.focus(); input.select(); }
+    } else if (e.key === 'Escape') {
+      hidePanel();
+      if (input) input.blur();
+    }
+  });
 })();

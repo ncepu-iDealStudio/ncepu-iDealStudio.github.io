@@ -4,6 +4,14 @@ title = 'Fast-Https 文档'
 summaryLength = 24
 disableKinds = ["taxonomy", "taxonomyTerm"]
 
+[outputs]
+  home = ["HTML", "SEARCH"]
+
+[outputFormats.SEARCH]
+  baseName = "search-index"
+  mediaType = "application/json"
+  isPlainText = true
+
 [params]
   description = 'Fast-Https：Windows 可视化 HTTPS 与反向代理管理工具的使用文档。'
   gitee = 'https://gitee.com/ncepu-bj/fast-https'
