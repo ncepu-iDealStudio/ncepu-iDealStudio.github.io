@@ -33,27 +33,52 @@
     else if (suf === 'm') n *= 1000000;
     return isNaN(n) ? null : Math.round(n);
   }
-  function bindStars(id, sources) {
+  function readStarCache(k) {
+    try {
+      var o = JSON.parse(localStorage.getItem(k) || 'null');
+      if (!o || typeof o.n !== 'number') return null;
+      if (Date.now() - o.t > 7 * 864e5) return null;
+      return o.n;
+    } catch (e) { return null; }
+  }
+  function writeStarCache(k, n) {
+    try { localStorage.setItem(k, JSON.stringify({ n: n, t: Date.now() })); } catch (e) {}
+  }
+  function bindStars(id, sources, cacheKey) {
     var el = document.getElementById(id);
     if (!el) return;
+    var cached = cacheKey ? readStarCache(cacheKey) : null;
+    if (cached !== null) el.textContent = fmtNum(cached);
     (function next(i) {
-      if (i >= sources.length) return;
+      if (i >= sources.length) {
+        if (cached === null) el.title = 'Star 数暂时取不到（接口限流），稍后刷新可恢复';
+        return;
+      }
       var s = sources[i];
       getJSON(s.url).then(function (d) {
         var n = s.pick(d);
-        if (typeof n === 'number' && !isNaN(n)) { el.textContent = fmtNum(n); }
-        else { next(i + 1); }
+        if (typeof n === 'number' && !isNaN(n)) {
+          el.textContent = fmtNum(n);
+          el.title = 'Stars ' + n;
+          if (cacheKey) writeStarCache(cacheKey, n);
+        } else { next(i + 1); }
       });
     })(0);
   }
+  function pickGiteeStars(d) {
+    return d && typeof d.stargazers_count === 'number' ? d.stargazers_count : null;
+  }
+  var GITEE_API = 'https://gitee.com/api/v5/repos/ncepu-bj/fast-https';
   bindStars('gitee-stars', [
-    { url: 'https://gitee.com/api/v5/repos/ncepu-bj/fast-https', pick: function (d) { return d && typeof d.stargazers_count === 'number' ? d.stargazers_count : null; } }
-  ]);
+    { url: GITEE_API, pick: pickGiteeStars },
+    { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(GITEE_API), pick: pickGiteeStars },
+    { url: 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(GITEE_API), pick: pickGiteeStars }
+  ], 'fh-gitee-stars');
   bindStars('github-stars', [
     { url: 'https://img.shields.io/github/stars/ncepu-iDealStudio/Fast-Https.json', pick: function (d) { return d ? parseShields(d.value) : null; } },
     { url: 'https://api.github.com/repos/ncepu-iDealStudio/Fast-Https', pick: function (d) { return d && typeof d.stargazers_count === 'number' ? d.stargazers_count : null; } },
     { url: 'https://ungh.cc/repos/ncepu-iDealStudio/Fast-Https', pick: function (d) { return d && d.repo && typeof d.repo.stars === 'number' ? d.repo.stars : null; } }
-  ]);
+  ], 'fh-github-stars');
 
   // TOC scrollspy
   var toc = document.getElementById('TableOfContents');
@@ -158,6 +183,27 @@
       if (input) input.blur();
     }
   });
+
+  // 文档侧边栏：分组折叠
+  var docTree = document.querySelector('.doctree');
+  if (docTree) {
+    Array.prototype.forEach.call(docTree.querySelectorAll('.caret'), function (btn) {
+      btn.addEventListener('click', function () {
+        var grp = btn.closest('.grp');
+        if (!grp) return;
+        var collapsed = grp.classList.toggle('collapsed');
+        btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      });
+    });
+    var activeLink = docTree.querySelector('a.on');
+    if (activeLink) {
+      var node = activeLink.parentNode;
+      while (node && node !== docTree) {
+        if (node.classList && node.classList.contains('grp')) node.classList.remove('collapsed');
+        node = node.parentNode;
+      }
+    }
+  }
 
   // 了解我们：滚动故事线
   var storyScrolly = document.getElementById('storyScrolly');

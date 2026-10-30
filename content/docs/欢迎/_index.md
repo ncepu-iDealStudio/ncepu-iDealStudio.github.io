@@ -1,5 +1,6 @@
 ---
 title: 欢迎
+weight: 1
 ---
 
 # 欢迎来到 Fast-Https

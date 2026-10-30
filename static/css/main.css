@@ -129,6 +129,30 @@ aside.side .t{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spac
 aside.side a{display:block;padding:7px 11px;border-radius:6px;color:var(--ink-2);font-size:13.8px;margin-bottom:1px;border-left:2px solid transparent;transition:.15s}
 aside.side a:hover{background:var(--accent-soft);color:var(--accent)}
 aside.side a.on{background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600}
+
+/* 折叠式层级导航 */
+aside.side .doctree .grp{margin-bottom:18px}
+aside.side .doctree .grp>.th{display:flex;align-items:center;gap:2px;margin:0 8px 8px}
+aside.side .doctree .grp>.th>a.t{flex:1;min-width:0;display:block;padding:0;margin:0;border:0;border-radius:4px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#8a97ab}
+aside.side .doctree .grp>.th>a.t:hover{color:var(--accent);background:none}
+aside.side .doctree .grp>.th>a.t.on{color:var(--accent);background:none;font-weight:600}
+aside.side .doctree .caret{width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;
+  padding:0;background:none;border:0;border-radius:6px;cursor:pointer;color:#8a97ab}
+aside.side .doctree .caret:hover{color:var(--accent);background:var(--accent-soft)}
+aside.side .doctree .caret::before{content:"";width:5px;height:5px;
+  border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .18s}
+aside.side .doctree .grp.collapsed>.th>.caret::before{transform:rotate(-45deg)}
+aside.side .doctree .grp.collapsed>.items{display:none}
+
+aside.side .doctree .grp.sub{margin:2px 0}
+aside.side .doctree .grp.sub>.th{margin:0;display:flex;align-items:center;gap:2px}
+aside.side .doctree .grp.sub>.th>a.t{flex:1;min-width:0;display:block;margin:0;padding:7px 11px;border-radius:6px;
+  border-left:2px solid transparent;font-family:inherit;font-size:13.8px;letter-spacing:0;text-transform:none;color:var(--ink-2)}
+aside.side .doctree .grp.sub>.th>a.t:hover{background:var(--accent-soft);color:var(--accent)}
+aside.side .doctree .grp.sub>.th>a.t.on{background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600}
+aside.side .doctree .grp.sub>.items{margin:2px 0 0 10px;padding-left:8px;border-left:1px dashed var(--line-2)}
+aside.side .doctree .grp.sub>.items>a{font-size:13.2px;padding:6px 10px}
 aside.side .foot{margin-top:26px;padding:14px 10px 0;border-top:1px solid var(--line-2);font-size:12px;color:#8a97ab;display:flex;flex-direction:column;gap:6px}
 aside.side .foot a:hover{color:var(--accent)}
 
@@ -153,6 +177,30 @@ article.doc h3{font-family:Sora;font-weight:600;font-size:17.5px;margin:26px 0 1
 article.doc p{font-size:15.5px;color:#3a475f;margin-bottom:14px}
 article.doc ul{margin:0 0 15px 20px;color:#3a475f;font-size:15px}
 article.doc ol{margin:0 0 15px 22px;color:#3a475f;font-size:15px}
+article.doc .doc-children{margin:0 0 18px;padding:0;list-style:none}
+article.doc .doc-children li{padding:10px 0;border-bottom:1px solid var(--line-2)}
+article.doc .doc-children li:last-child{border-bottom:0}
+article.doc .doc-children a{font-weight:600}
+article.doc .doc-children span{display:block;margin-top:4px;color:#8a97ab;font-size:13px}
+article.doc .doc-children-empty{margin:0 0 18px;color:#8a97ab;font-size:14px}
+
+/* 地址行 + 索引卡片 */
+.entry-list{display:flex;flex-direction:column;gap:8px;margin:16px 0 22px}
+.entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 26px}
+article.doc .entry-row,article.doc .entry-card{display:flex;align-items:center;gap:13px;padding:13px 15px;
+  border:1px solid var(--line-2);border-radius:8px;background:var(--paper);color:var(--ink);text-decoration:none;
+  transition:border-color .16s,box-shadow .16s,transform .16s}
+article.doc .entry-row:hover,article.doc .entry-card:hover{border-color:var(--accent);border-bottom-color:var(--accent);
+  box-shadow:0 10px 26px rgba(30,79,216,.08);transform:translateY(-1px);color:var(--ink)}
+article.doc .entry-row .ico,article.doc .entry-card .ico{flex:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+article.doc .ico svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+article.doc .entry-row .body,article.doc .entry-card .body{display:flex;flex-direction:column;gap:3px;min-width:0}
+article.doc .entry-row b,article.doc .entry-card b{font-size:14.5px;font-weight:600;color:var(--ink)}
+article.doc .entry-row em,article.doc .entry-card em{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:12px;
+  color:#8a97ab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+article.doc .entry-card em{white-space:normal;font-family:inherit;font-size:12.5px;line-height:1.5}
+@media(max-width:700px){.entry-grid{grid-template-columns:1fr}}
 article.doc li{margin-bottom:7px}
 article.doc strong{color:var(--ink)}
 article.doc :not(pre) > code{font-family:"IBM Plex Mono",monospace;font-size:13px;background:#F1F4F9;border:1px solid var(--line-2);border-radius:4px;padding:1px 6px;color:var(--accent-deep)}

@@ -1,0 +1,15 @@
+{{- $cur := .Page -}}
+{{- $pages := $cur.CurrentSection.Pages -}}
+<div class="entry-grid">
+  {{- range $pages }}
+    {{- if ne .RelPermalink $cur.RelPermalink }}
+  <a class="entry-card" href="{{ .RelPermalink }}">
+    <span class="ico">{{ partial "doc-icon.html" (dict "name" (.Params.icon | default "doc")) }}</span>
+    <span class="body">
+      <b>{{ .Title }}</b>
+      {{ with .Params.summary }}<em>{{ . }}</em>{{ end }}
+    </span>
+  </a>
+    {{- end }}
+  {{- end }}
+</div>

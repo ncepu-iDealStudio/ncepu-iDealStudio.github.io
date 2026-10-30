@@ -11,7 +11,7 @@ weight: 5
 
 先确认本地 WebSocket 服务可以独立运行，例如监听 `127.0.0.1:8081`：
 
-![目标项目](/assets/images/1712113683954-c20735a0-2a5f-4497-9e48-bd42ebc81524-d8ffc2dd789c4336c797a185f21b251c.png)
+![目标项目](/assets/images/docs/tutorial/5.1.png)
 
 ## 二 配置 Fast-Https 代理
 

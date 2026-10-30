@@ -16,75 +16,7 @@ disableKinds = ["taxonomy"]
   description = 'Fast-Https：Windows 可视化 HTTPS 与反向代理管理工具的使用文档。'
   gitee = 'https://gitee.com/ncepu-bj/fast-https'
   github = 'https://github.com/ncepu-iDealStudio/Fast-Https'
+  giteeStars = 37
 
 [markup.goldmark.renderer]
   unsafe = true
-
-[[menu.docs]]
-  name = '软件获取'
-  identifier = 'sw'
-  weight = 2
-[[menu.docs]]
-  name = '软件获取与安装'
-  url = '/docs/软件获取/软件获取与安装/'
-  parent = 'sw'
-  weight = 1
-[[menu.docs]]
-  name = '从源代码构建'
-  url = '/docs/软件获取/从源代码构建/'
-  parent = 'sw'
-  weight = 2
-[[menu.docs]]
-  name = '使用教程'
-  identifier = 'tut'
-  weight = 3
-[[menu.docs]]
-  name = '基本配置'
-  url = '/docs/使用教程/基本配置/'
-  parent = 'tut'
-  weight = 1
-[[menu.docs]]
-  name = '配置发布本地静态站点'
-  url = '/docs/使用教程/配置发布本地静态站点/'
-  parent = 'tut'
-  weight = 2
-[[menu.docs]]
-  name = '配置发布单页面静态站点'
-  url = '/docs/使用教程/配置发布单页面静态站点/'
-  parent = 'tut'
-  weight = 3
-[[menu.docs]]
-  name = '反向代理站点配置'
-  url = '/docs/使用教程/反向代理站点配置/'
-  parent = 'tut'
-  weight = 4
-[[menu.docs]]
-  name = '反向代理 WebSocket 接口项目'
-  url = '/docs/使用教程/反向代理WebSocket接口项目/'
-  parent = 'tut'
-  weight = 5
-[[menu.docs]]
-  name = '如何为网站配置重定向功能'
-  url = '/docs/使用教程/如何为网站配置重定向功能/'
-  parent = 'tut'
-  weight = 6
-[[menu.docs]]
-  name = '配置网站通过 HTTPS 访问'
-  url = '/docs/使用教程/配置网站通过HTTPS访问/'
-  parent = 'tut'
-  weight = 7
-[[menu.docs]]
-  name = '给反向代理站点配置缓存'
-  url = '/docs/使用教程/给反向代理站点配置缓存/'
-  parent = 'tut'
-  weight = 8
-[[menu.docs]]
-  name = '配置服务器访问 IP 黑名单'
-  url = '/docs/使用教程/配置服务器访问IP黑名单/'
-  parent = 'tut'
-  weight = 9
-[[menu.docs]]
-  name = '配置 Web 应用访问限流'
-  url = '/docs/使用教程/配置Web应用访问限流/'
-  parent = 'tut'
-  weight = 10

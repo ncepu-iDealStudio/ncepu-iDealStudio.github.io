@@ -1,0 +1,11 @@
+{{- $name := .name | default "doc" -}}
+{{- $icons := dict
+  "download" `<path d="M12 4v10m0 0l-4-4m4 4l4-4M5 20h14"/>`
+  "repo" `<circle cx="6.5" cy="6" r="2.2"/><circle cx="6.5" cy="18" r="2.2"/><circle cx="17.5" cy="8.2" r="2.2"/><path d="M6.5 8.2v7.6"/><path d="M8.7 8.2h6.6a2 2 0 012 2v.6"/>`
+  "windows" `<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>`
+  "linux" `<rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M7 9.5l3 2.8-3 2.8M13 15h4"/>`
+  "docker" `<rect x="3" y="9" width="18" height="10" rx="2"/><path d="M7.5 9V5.5H12V9M13.5 9V5.5H18V9"/>`
+  "source" `<path d="M9.5 8l-4 4 4 4M14.5 8l4 4-4 4"/>`
+  "doc" `<path d="M6.5 3.5h7L18 8v12.5H6.5z"/><path d="M13.5 3.5V8H18"/>`
+-}}
+<svg viewBox="0 0 24 24" aria-hidden="true">{{ index $icons $name | default (index $icons "doc") | safeHTML }}</svg>

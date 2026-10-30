@@ -1,0 +1,10 @@
+{{- $sec := .Page.CurrentSection -}}
+{{- with $sec.Pages -}}
+<ul class="doc-children">
+  {{- range . }}
+  <li><a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ with .Params.summary }}<span>{{ . }}</span>{{ end }}</li>
+  {{- end }}
+</ul>
+{{- else -}}
+<p class="doc-children-empty">该平台的安装方式正在整理中。</p>
+{{- end -}}

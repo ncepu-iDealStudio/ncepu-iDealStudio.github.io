@@ -1,20 +1,21 @@
 {{ $cur := . }}
 <div class="shell">
   <aside class="side">
-    {{ range .Site.Menus.docs }}
-      {{ if not .Parent }}
-        {{ if .Children }}
+    {{ $docs := site.GetPage "/docs" }}
+    <nav class="doctree">
+      {{ with $docs }}
+        {{ range .Sections.ByWeight }}
+          {{ $sec := . }}
           <div class="grp">
-            <div class="t">{{ .Name }}</div>
-            {{ range .Children }}
-              <a href="{{ .URL | relURL }}" class="{{ if eq (.URL | relURL) $cur.RelPermalink }}on{{ end }}">{{ .Name }}</a>
-            {{ end }}
+            <div class="th">
+              <a class="t{{ if eq $sec.RelPermalink $cur.RelPermalink }} on{{ end }}" href="{{ $sec.RelPermalink }}">{{ $sec.Title }}</a>
+              {{ if $sec.Pages }}<button class="caret" type="button" aria-expanded="true" aria-label="展开或收起 {{ $sec.Title }}"></button>{{ end }}
+            </div>
+            {{ if $sec.Pages }}<div class="items">{{ partial "doc-side.html" (dict "p" $sec "cur" $cur "depth" 1) }}</div>{{ end }}
           </div>
-        {{ else }}
-          <a href="{{ .URL | relURL }}" class="on" style="margin:0 8px 18px;font-size:13px;color:#8a97ab;font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase">{{ .Name }}</a>
         {{ end }}
       {{ end }}
-    {{ end }}
+    </nav>
     <div class="foot">
       <span>v2.4 · 2026</span>
       <a href="{{ .Site.Params.gitee }}">Gitee 仓库</a>

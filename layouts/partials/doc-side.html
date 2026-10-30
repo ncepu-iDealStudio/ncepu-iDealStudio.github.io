@@ -1,0 +1,16 @@
+{{- $p := .p -}}
+{{- $cur := .cur -}}
+{{- $depth := .depth | default 1 -}}
+{{- range $p.Pages -}}
+  {{- if .IsSection -}}
+    <div class="grp sub" data-depth="{{ $depth }}">
+      <div class="th">
+        <a href="{{ .RelPermalink }}" class="t{{ if eq .RelPermalink $cur.RelPermalink }} on{{ end }}">{{ .Title }}</a>
+        <button class="caret" type="button" aria-expanded="true" aria-label="展开或收起 {{ .Title }}"></button>
+      </div>
+      <div class="items">{{ partial "doc-side.html" (dict "p" . "cur" $cur "depth" (add $depth 1)) }}</div>
+    </div>
+  {{- else -}}
+    <a href="{{ .RelPermalink }}" class="{{ if eq .RelPermalink $cur.RelPermalink }}on{{ end }}">{{ .Title }}</a>
+  {{- end -}}
+{{- end -}}

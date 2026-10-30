@@ -8,12 +8,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
+<link rel="stylesheet" href="{{ "css/main.css" | relURL }}?v={{ (os.Stat "static/css/main.css").ModTime.Unix }}">
 </head>
 <body{{ if eq .Type "about" }} class="story-page"{{ end }}>
 {{ partial "nav.html" . }}
 <div class="progress" id="prog"></div>
 {{ block "main" . }}{{ end }}
-<script src="{{ "js/app.js" | relURL }}"></script>
+<script src="{{ "js/app.js" | relURL }}?v={{ (os.Stat "static/js/app.js").ModTime.Unix }}"></script>
 </body>
 </html>
