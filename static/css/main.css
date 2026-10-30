@@ -30,6 +30,10 @@ nav.menus a{padding:7px 13px;border-radius:7px;color:var(--ink-2);font-size:14px
 nav.menus a:hover{background:var(--accent-soft);color:var(--accent)}
 nav.menus a.active{background:var(--accent);color:#fff}
 .nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.lang-switch{display:flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--line-2);border-radius:6px;background:rgba(255,255,255,.6)}
+.lang-switch a{font-size:12px;line-height:1;padding:4px 8px;border-radius:4px;color:#8a97ab}
+.lang-switch a:hover{color:var(--accent)}
+.lang-switch a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
 .gh{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);border:1px solid var(--line);padding:7px 12px;border-radius:8px;background:#fff;transition:.18s}
 .gh:hover{color:var(--accent);border-color:var(--accent)}
 .gh svg{width:15px;height:15px}

@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{ .Site.Language.Locale | default .Site.Language.Lang }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ if .IsHome }}Fast-Https · 文档{{ else }}{{ .Title }} · Fast-Https 文档{{ end }}</title>
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }}{{ i18n "siteSuffix" }}{{ end }}</title>
 <meta name="description" content="{{ .Site.Params.description }}">
+<meta name="search-index" content="{{ "search-index.json" | relLangURL }}">
 <link rel="icon" href="{{ "assets/images/favicon.ico" | relURL }}" type="image/x-icon">
 <link rel="shortcut icon" href="{{ "assets/images/favicon.ico" | relURL }}" type="image/x-icon">
 <link rel="apple-touch-icon" href="{{ "assets/images/favicon.ico" | relURL }}">

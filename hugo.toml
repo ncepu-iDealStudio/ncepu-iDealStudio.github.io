@@ -4,6 +4,10 @@ title = 'Fast-Https 文档'
 summaryLength = 24
 disableKinds = ["taxonomy"]
 
+# 默认语言中文，直接挂在根路径；英文在 /en/ 下
+defaultContentLanguage = 'zh'
+defaultContentLanguageInSubdir = false
+
 [outputs]
   home = ["HTML", "SEARCH"]
 
@@ -13,10 +17,58 @@ disableKinds = ["taxonomy"]
   isPlainText = true
 
 [params]
-  description = 'Fast-Https：Windows 可视化 HTTPS 与反向代理管理工具的使用文档。'
   gitee = 'https://gitee.com/ncepu-bj/fast-https'
   github = 'https://github.com/ncepu-iDealStudio/Fast-Https'
   giteeStars = 37
 
 [markup.goldmark.renderer]
   unsafe = true
+
+[languages]
+  [languages.zh]
+    label = '中文'
+    locale = 'zh-CN'
+    contentDir = 'content/zh'
+    weight = 1
+    title = 'Fast-Https 文档'
+    [languages.zh.params]
+      description = 'Fast-Https：Windows 可视化 HTTPS 与反向代理管理工具的使用文档。'
+      linkStart = '/docs/欢迎/'
+      linkInstall = '/docs/软件获取/软件获取与安装/'
+      linkTutorial = '/docs/使用教程/基本配置/'
+      linkHttps = '/docs/使用教程/配置网站通过HTTPS访问/'
+      linkAbout = '/about/'
+
+    [[languages.zh.menus.main]]
+      name = '软件获取'
+      pageRef = '/docs/软件获取/软件获取与安装/'
+      weight = 1
+
+    [[languages.zh.menus.main]]
+      name = '使用教程'
+      pageRef = '/docs/使用教程/基本配置/'
+      weight = 2
+
+  [languages.en]
+    label = 'English'
+    locale = 'en-US'
+    contentDir = 'content/en'
+    weight = 2
+    title = 'Fast-Https Docs'
+    [languages.en.params]
+      description = 'Documentation for Fast-Https, a visual HTTPS and reverse proxy manager for Windows.'
+      linkStart = '/en/docs/welcome/'
+      linkInstall = '/en/docs/install/'
+      linkTutorial = '/en/docs/tutorial/basic-configuration/'
+      linkHttps = '/en/docs/tutorial/https-access/'
+      linkAbout = '/en/about/'
+
+    [[languages.en.menus.main]]
+      name = 'Get Started'
+      pageRef = '/docs/install/'
+      weight = 1
+
+    [[languages.en.menus.main]]
+      name = 'Tutorials'
+      pageRef = '/docs/tutorial/'
+      weight = 2

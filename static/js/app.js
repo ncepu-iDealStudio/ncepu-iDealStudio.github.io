@@ -112,7 +112,9 @@
 
   function loadIndex() {
     if (idxPromise) return idxPromise;
-    idxPromise = fetch('/search-index.json').then(function (r) { return r.json(); })
+    var meta = document.querySelector('meta[name="search-index"]');
+    var indexUrl = meta ? meta.getAttribute('content') : '/search-index.json';
+    idxPromise = fetch(indexUrl).then(function (r) { return r.json(); })
       .then(function (d) { idx = d; return d; });
     return idxPromise;
   }
@@ -147,7 +149,7 @@
     });
     out.sort(function (a, b) { return b.score - a.score; });
     if (!out.length) {
-      panel.innerHTML = '<div class="nav-search-empty">没有匹配的文档</div>';
+      panel.innerHTML = '<div class="nav-search-empty">' + escapeHtml(panel.getAttribute('data-empty') || '没有匹配的文档') + '</div>';
       panel.hidden = false;
       return;
     }

@@ -1,6 +1,7 @@
 ---
 title: 欢迎
 weight: 1
+translationKey: welcome
 ---
 
 # 欢迎来到 Fast-Https

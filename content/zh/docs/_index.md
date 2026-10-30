@@ -1,5 +1,6 @@
 ---
 title: 文档中心
+translationKey: docs
 ---
 
 欢迎使用 **Fast-Https** 文档中心。这里汇集了软件获取、安装构建以及日常使用的全部教程。

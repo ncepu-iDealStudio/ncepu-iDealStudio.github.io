@@ -1,6 +1,6 @@
 <header class="nav">
   <div class="nav-in">
-    <a class="brand" href="{{ "/" | relURL }}"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3Z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg></span>Fast-Https</a>
+    <a class="brand" href="{{ site.Home.RelPermalink }}"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3Z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg></span>Fast-Https</a>
     <div class="star-pills">
       <a class="star-pill" href="https://gitee.com/ncepu-bj/fast-https" target="_blank" rel="noopener" title="Gitee Stars">
         <span class="ic gitee">{{ partial "icon.html" "gitee" }}</span><span class="star">★</span><b id="gitee-stars">{{ site.Params.giteeStars | default "—" }}</b>
@@ -10,14 +10,28 @@
       </a>
     </div>
     <nav class="menus">
-      <a href="{{ "/docs/软件获取/软件获取与安装/" | relURL }}" class="{{ if eq .RelPermalink "/docs/软件获取/软件获取与安装/" }}active{{ end }}">软件获取</a>
-      <a href="{{ "/docs/使用教程/基本配置/" | relURL }}" class="{{ if eq .RelPermalink "/docs/使用教程/基本配置/" }}active{{ end }}">使用教程</a>
+      {{ $cur := . }}
+      {{ range site.Menus.main }}
+        {{ $u := .URL }}
+        {{ with .Page }}{{ $u = .RelPermalink }}{{ end }}
+        <a href="{{ $u }}" class="{{ if $cur.IsMenuCurrent "main" . }}active{{ end }}">{{ .Name }}</a>
+      {{ end }}
     </nav>
     <div class="nav-right">
+      <div class="lang-switch" role="group" aria-label="{{ i18n "langSwitchAria" }}">
+        {{ range hugo.Sites }}
+          {{ $s := . }}
+          {{ $href := $s.Home.RelPermalink }}
+          {{ range $cur.AllTranslations }}
+            {{ if eq .Language.Lang $s.Language.Lang }}{{ $href = .RelPermalink }}{{ end }}
+          {{ end }}
+          <a href="{{ $href }}" lang="{{ $s.Language.Lang }}" hreflang="{{ $s.Language.Lang }}"{{ if eq $s.Language.Lang $cur.Language.Lang }} class="on" aria-current="true"{{ end }}>{{ $s.Language.Label }}</a>
+        {{ end }}
+      </div>
       <div class="nav-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
-        <input id="searchInput" type="search" placeholder="搜索文档…" autocomplete="off" spellcheck="false" aria-label="搜索文档">
-        <div class="nav-search-panel" id="searchResults" hidden></div>
+        <input id="searchInput" type="search" placeholder="{{ i18n "searchPlaceholder" }}" autocomplete="off" spellcheck="false" aria-label="{{ i18n "searchAria" }}">
+        <div class="nav-search-panel" id="searchResults" data-empty="{{ i18n "searchEmpty" }}" hidden></div>
       </div>
     </div>
   </div>

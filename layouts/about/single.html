@@ -1,20 +1,20 @@
 {{ define "main" }}
 <div class="story">
   <div class="story-progress" id="storyProgress"></div>
-  <div class="story-hud" id="storyHud">开始<small>CURRENT</small></div>
+  <div class="story-hud" id="storyHud">{{ i18n "storyHud" }}<small>{{ i18n "storyChip" }}</small></div>
 
   <header class="story-hero">
-    <div class="story-top"><span>Fast-Https 团队发展报告</span><span>华北电力大学 · iDealStudio</span></div>
-    <div class="story-years">2019<em>—</em>至今</div>
-    <h1>一条 Go 语言产品线的成长</h1>
-    <p class="story-sub">这是一份属于华北电力大学 iDealStudio 工作室的成长记录：2019 年，一支 Go 语言学习小组起步；2020 年做出第一个开源项目；2023 年 Fast-Https 正式立项；2024 年发布 1.0.0，并入驻华为 openEuler 社区。向下滚动，按时间顺序看这条产品线如何一步步长出来。</p>
+    <div class="story-top"><span>{{ i18n "storyKicker" }}</span><span>{{ i18n "storyOrg" }}</span></div>
+    <div class="story-years">{{ i18n "storyYearsStart" }}<em>—</em>{{ i18n "storyYearsEnd" }}</div>
+    <h1>{{ i18n "storyTitle" }}</h1>
+    <p class="story-sub">{{ i18n "storySub" }}</p>
     <div class="story-facts">
-      <div><b>2019</b><span>起点</span></div>
-      <div><b>22</b><span>关键节点</span></div>
-      <div><b>1.0.0</b><span>首个正式版</span></div>
-      <div><b>openEuler</b><span>开源社区</span></div>
+      <div><b>{{ i18n "storyFact1v" }}</b><span>{{ i18n "storyFact1l" }}</span></div>
+      <div><b>{{ i18n "storyFact2v" }}</b><span>{{ i18n "storyFact2l" }}</span></div>
+      <div><b>{{ i18n "storyFact3v" }}</b><span>{{ i18n "storyFact3l" }}</span></div>
+      <div><b>{{ i18n "storyFact4v" }}</b><span>{{ i18n "storyFact4l" }}</span></div>
     </div>
-    <div class="story-hint"><span class="dot"></span>向下滚动 · 开始</div>
+    <div class="story-hint"><span class="dot"></span>{{ i18n "storyHint" }}</div>
   </header>
 
   <main class="story-scrolly" id="storyScrolly">
@@ -39,15 +39,15 @@
   </main>
 
   <footer class="story-end">
-    <div class="story-year">开始 → 至今</div>
-    <h2>故事还在继续</h2>
-    <p>Fast-Https 由华北电力大学 iDealStudio 工作室发起并维护。欢迎在 Gitee 与 GitHub 上关注、提问或参与贡献。</p>
+    <div class="story-year">{{ i18n "storyEndYear" }}</div>
+    <h2>{{ i18n "storyEndTitle" }}</h2>
+    <p>{{ i18n "storyEndP" }}</p>
     <div class="issuelinks">
-      <a class="ibtn" href="https://gitee.com/ncepu-bj/fast-https" target="_blank" rel="noopener">{{ partial "icon.html" "gitee" }}<span>Gitee 仓库</span></a>
-      <a class="ibtn" href="https://github.com/ncepu-iDealStudio/Fast-Https" target="_blank" rel="noopener">{{ partial "icon.html" "github" }}<span>GitHub 仓库</span></a>
-      <a class="ibtn" href="https://gitee.com/ncepu-bj/fast-https/issues" target="_blank" rel="noopener">{{ partial "icon.html" "issue" }}<span>提交问题</span></a>
+      <a class="ibtn" href="https://gitee.com/ncepu-bj/fast-https" target="_blank" rel="noopener">{{ partial "icon.html" "gitee" }}<span>{{ i18n "repoGitee" }}</span></a>
+      <a class="ibtn" href="https://github.com/ncepu-iDealStudio/Fast-Https" target="_blank" rel="noopener">{{ partial "icon.html" "github" }}<span>{{ i18n "repoGithub" }}</span></a>
+      <a class="ibtn" href="https://gitee.com/ncepu-bj/fast-https/issues" target="_blank" rel="noopener">{{ partial "icon.html" "issue" }}<span>{{ i18n "btnIssue" }}</span></a>
     </div>
-    <div class="story-foot">华北电力大学 iDealStudio 工作室 · Fast-Https</div>
+    <div class="story-foot">{{ i18n "storyFooter" }}</div>
   </footer>
 </div>
 {{ partial "footer.html" . }}
