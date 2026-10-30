@@ -1,0 +1,22 @@
+{{- $dest := .Destination -}}
+{{- $alt := .PlainText -}}
+{{- $title := .Title -}}
+{{- $img := false -}}
+{{- if hasPrefix $dest "/assets/images/" -}}
+  {{- $img = resources.Get (strings.TrimPrefix "/assets/" $dest) -}}
+{{- end -}}
+{{- if $img -}}
+  {{- $large := $img -}}
+  {{- if gt $img.Width 1400 -}}
+    {{- $large = $img.Resize "1400x webp q82" -}}
+  {{- else -}}
+    {{- $large = $img.Resize (printf "%dx webp q82" $img.Width) -}}
+  {{- end -}}
+  {{- $small := false -}}
+  {{- if gt $large.Width 780 -}}
+    {{- $small = $large.Resize "780x webp q78" -}}
+  {{- end -}}
+<img src="{{ $large.RelPermalink }}"{{ if $small }} srcset="{{ $small.RelPermalink }} {{ $small.Width }}w, {{ $large.RelPermalink }} {{ $large.Width }}w" sizes="(max-width: 900px) 92vw, 860px"{{ end }} width="{{ $large.Width }}" height="{{ $large.Height }}" alt="{{ $alt }}"{{ with $title }} title="{{ . }}"{{ end }} loading="lazy" decoding="async">
+{{- else -}}
+<img src="{{ $dest | relURL }}" alt="{{ $alt }}"{{ with $title }} title="{{ . }}"{{ end }} loading="lazy" decoding="async">
+{{- end -}}

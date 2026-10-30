@@ -210,7 +210,7 @@ article.doc strong{color:var(--ink)}
 article.doc :not(pre) > code{font-family:"IBM Plex Mono",monospace;font-size:13px;background:#F1F4F9;border:1px solid var(--line-2);border-radius:4px;padding:1px 6px;color:var(--accent-deep)}
 article.doc a{color:var(--accent);border-bottom:1px solid rgba(30,79,216,.35)}
 article.doc a:hover{border-bottom-color:var(--accent)}
-article.doc img{max-width:100%;border:1px solid var(--line-2);border-radius:6px;margin:16px 0;display:block}
+article.doc img{max-width:100%;height:auto;border:1px solid var(--line-2);border-radius:6px;margin:16px 0;display:block}
 
 /* 独立页面（了解我们等） */
 .page-wrap{max-width:1040px;margin:0 auto;padding:56px 26px 90px}

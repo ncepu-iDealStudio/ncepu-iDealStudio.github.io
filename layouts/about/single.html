@@ -23,7 +23,7 @@
       {{ if eq .Section "timeline" }}
       <section class="story-node" data-year="{{ .Params.year }}">
         <figure class="story-media">
-          <img src="{{ .Params.image }}" alt="{{ .Title }}" loading="lazy">
+          {{ partial "img.html" (dict "src" .Params.image "alt" .Title) }}
           <figcaption class="story-cap">{{ .Params.caption }}</figcaption>
         </figure>
         <div class="story-body">

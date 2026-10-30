@@ -1,0 +1,15 @@
+{{- $src := .src -}}
+{{- $alt := .alt | default "" -}}
+{{- $class := .class -}}
+{{- $img := resources.Get (strings.TrimPrefix "/assets/" $src) -}}
+{{- if $img -}}
+  {{- $out := $img -}}
+  {{- if gt $img.Width 1200 -}}
+    {{- $out = $img.Resize "1200x webp q82" -}}
+  {{- else -}}
+    {{- $out = $img.Resize (printf "%dx webp q82" $img.Width) -}}
+  {{- end -}}
+<img src="{{ $out.RelPermalink }}" width="{{ $out.Width }}" height="{{ $out.Height }}" alt="{{ $alt }}" loading="lazy" decoding="async"{{ with $class }} class="{{ . }}"{{ end }}>
+{{- else -}}
+<img src="{{ $src | relURL }}" alt="{{ $alt }}"{{ with $class }} class="{{ . }}"{{ end }}>
+{{- end -}}
