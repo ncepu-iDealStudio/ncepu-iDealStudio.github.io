@@ -24,6 +24,11 @@ defaultContentLanguageInSubdir = false
 [markup.goldmark.renderer]
   unsafe = true
 
+# 代码高亮改用浅色主题，与纸面白的正文阅读区一致（默认 monokai 深色块会打断阅读节奏）
+[markup.highlight]
+  style = 'github'
+  tabWidth = 2
+
 [languages]
   [languages.zh]
     label = '中文'

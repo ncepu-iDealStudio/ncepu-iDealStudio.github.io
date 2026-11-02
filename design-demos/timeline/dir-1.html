@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>方向 A · 技术蓝图</title>
+<style>
+  :root{--bg:#F6F9FD;--ink:#0E1B33;--ink2:#3A4A63;--line:#C9D6E8;--blue:#1E4FD8;--deep:#0E7490;
+    --sans:"Source Han Sans SC","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    --mono:"JetBrains Mono","IBM Plex Mono","SFMono-Regular",Consolas,monospace;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0b0f17;font-family:var(--sans)}
+  .deck{display:flex;flex-direction:column;align-items:center;gap:26px;padding:26px}
+  .slide{width:1920px;height:1080px;background:var(--bg);color:var(--ink);position:relative;overflow:hidden;
+    transform-origin:top center;
+    background-image:linear-gradient(rgba(30,79,216,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(30,79,216,.06) 1px,transparent 1px);
+    background-size:48px 48px;}
+  .top{position:absolute;top:54px;left:80px;right:80px;display:flex;justify-content:space-between;
+    font-family:var(--mono);font-size:18px;color:#5A6B84;border-bottom:1px solid var(--line);padding-bottom:16px}
+  .foot{position:absolute;left:80px;bottom:52px;font-family:var(--mono);font-size:18px;color:#5A6B84}
+
+  /* cover */
+  .kicker{position:absolute;top:196px;left:80px;font-size:22px;letter-spacing:.12em;color:var(--deep)}
+  h1{position:absolute;top:250px;left:80px;width:1080px;font-size:104px;line-height:1.06;letter-spacing:-.02em;font-weight:800}
+  .sub{position:absolute;top:520px;left:80px;width:920px;font-size:28px;line-height:1.75;color:var(--ink2)}
+  .release{position:absolute;right:80px;top:236px;width:430px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:34px 36px}
+  .release .v{font-family:var(--mono);font-size:86px;font-weight:700;color:var(--blue);line-height:1}
+  .release .d{font-size:22px;color:var(--ink2);margin-top:10px}
+  .release ul{list-style:none;margin-top:24px;border-top:1px solid var(--line)}
+  .release li{font-size:22px;color:var(--ink2);padding:12px 0;border-bottom:1px solid #E7EEF8;display:flex;justify-content:space-between}
+  .release li b{color:var(--ink);font-weight:600}
+
+  .axis{position:absolute;left:80px;right:80px;bottom:150px}
+  .stops{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:18px}
+  .stop{width:280px;position:relative}
+  .stop::before{content:"";position:absolute;top:-24px;left:0;width:9px;height:9px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 5px rgba(30,79,216,.12)}
+  .stop b{display:block;font-family:var(--mono);font-size:30px;color:var(--blue)}
+  .stop span{display:block;font-size:20px;color:var(--ink2);margin-top:6px}
+
+  /* timeline */
+  h2{position:absolute;top:150px;left:80px;font-size:56px;font-weight:700;letter-spacing:-.01em}
+  .note{position:absolute;top:222px;left:80px;font-family:var(--mono);font-size:20px;color:#5A6B84}
+  .roadmap{position:absolute;top:300px;left:80px;right:80px}
+  .roadmap .stops{position:relative;border:0;padding:0;height:640px}
+  .roadmap .stops::before{content:"";position:absolute;top:90px;left:0;right:0;height:2px;background:var(--line)}
+  .roadmap .stop{position:relative;width:300px;height:640px}
+  .roadmap .stop::before{display:none}
+  .roadmap .yr{position:absolute;top:0;left:0;right:0;text-align:center;font-family:var(--mono);font-size:30px;color:var(--blue)}
+  .roadmap .dot{position:absolute;top:83px;left:50%;transform:translateX(-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--blue);z-index:1}
+  .roadmap .card{position:absolute;top:140px;left:0;width:300px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:22px;box-shadow:0 12px 28px rgba(14,27,51,.06)}
+  .roadmap .card h3{font-size:26px;font-weight:700;line-height:1.35;margin-bottom:8px}
+  .roadmap .card p{font-size:22px;line-height:1.6;color:var(--ink2)}
+  .roadmap .card .tag{display:inline-block;font-family:var(--mono);font-size:16px;color:var(--deep);margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 封面 -->
+  <section class="slide">
+    <div class="top"><span>iDealStudio · Fast-Https</span><span>团队发展报告 / 2024</span></div>
+    <div class="kicker">Go 语言产品线 · 2019—2024</div>
+    <h1>一条 Go 语言<br>产品线的成长</h1>
+    <p class="sub">从 2019 年的学习小组，到 2023 年正式立项，再到 2024 年发布 1.0.0 并入驻华为 openEuler 社区。</p>
+
+    <div class="release">
+      <div class="v">1.0.0</div>
+      <div class="d">2024.01 首个正式版本</div>
+      <ul>
+        <li><span>Windows 托盘版</span><b>已发布</b></li>
+        <li><span>Linux 服务化</span><b>已支持</b></li>
+        <li><span>openEuler 社区</span><b>已入驻</b></li>
+      </ul>
+    </div>
+
+    <div class="axis">
+      <div class="stops">
+        <div class="stop"><b>2019</b><span>开启 Go 产品线</span></div>
+        <div class="stop"><b>2020</b><span>学习小组</span></div>
+        <div class="stop"><b>2022</b><span>IPFS Blog</span></div>
+        <div class="stop"><b>2023</b><span>正式立项</span></div>
+        <div class="stop"><b>2024</b><span>1.0.0 / openEuler</span></div>
+      </div>
+    </div>
+    <div class="foot">华北电力大学 iDealStudio 工作室</div>
+  </section>
+
+  <!-- 时间线 -->
+  <section class="slide">
+    <div class="top"><span>iDealStudio · Fast-Https</span><span>团队发展报告 / 2024</span></div>
+    <h2>发展大事记</h2>
+    <div class="note">2019 — 2024 · 关键里程碑</div>
+
+    <div class="roadmap">
+      <div class="stops">
+        <div class="stop">
+          <div class="yr">2019</div><div class="dot"></div>
+          <div class="card"><span class="tag">起点</span><h3>开启 Go 语言产品线</h3><p>软件 1901 班李瑞阳成为第一批 Go 语言学习成员。</p></div>
+        </div>
+        <div class="stop">
+          <div class="yr">2020</div><div class="dot"></div>
+          <div class="card"><span class="tag">学习小组</span><h3>学习小组与首个开源项目</h3><p>发布「Go 语言接口代码生成器」，申报 Go 大创项目。</p></div>
+        </div>
+        <div class="stop">
+          <div class="yr">2023.07</div><div class="dot"></div>
+          <div class="card"><span class="tag">立项</span><h3>Fast-Https 正式立项</h3><p>熊老师命名，定位「足够快、天生支持 HTTPS」。</p></div>
+        </div>
+        <div class="stop">
+          <div class="yr">2024.01</div><div class="dot"></div>
+          <div class="card"><span class="tag">发布</span><h3>1.0.0 正式发布</h3><p>Windows 与 Linux 双平台，功能模块成型。</p></div>
+        </div>
+        <div class="stop">
+          <div class="yr">2024.05</div><div class="dot"></div>
+          <div class="card"><span class="tag">社区</span><h3>入驻 openEuler</h3><p>大创国家级优秀，挑战杯北京市三等奖。</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">华北电力大学 iDealStudio 工作室</div>
+  </section>
+
+</div>
+<script>
+(function(){
+  function fit(){
+    var s=Math.min(1,(window.innerWidth-52)/1920);
+    document.querySelectorAll('.slide').forEach(function(el){
+      el.style.transform='scale('+s+')';
+      el.style.marginBottom=(1080*s-1080)+'px';
+    });
+  }
+  window.addEventListener('resize',fit); fit();
+})();
+</script>
+</body>
+</html>

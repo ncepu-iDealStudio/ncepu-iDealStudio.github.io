@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>方向 C · 发布控制台</title>
+<style>
+  :root{--bg:#080C14;--ink:#E8EEF7;--dim:#8290A6;--line:#1B2536;--teal:#3DE0C8;
+    --sans:"Source Han Sans SC","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    --mono:"JetBrains Mono","IBM Plex Mono","SFMono-Regular",Consolas,monospace;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05070b;font-family:var(--sans)}
+  .deck{display:flex;flex-direction:column;align-items:center;gap:26px;padding:26px}
+  .slide{width:1920px;height:1080px;background:var(--bg);color:var(--ink);position:relative;overflow:hidden;transform-origin:top center;
+    background-image:radial-gradient(rgba(61,224,200,.10) 1px,transparent 1px);background-size:34px 34px}
+  .top{position:absolute;top:52px;left:80px;right:80px;display:flex;justify-content:space-between;
+    font-family:var(--mono);font-size:18px;color:var(--dim);border-bottom:1px solid var(--line);padding-bottom:16px}
+  .foot{position:absolute;left:80px;bottom:50px;font-family:var(--mono);font-size:18px;color:var(--dim)}
+
+  /* cover */
+  .ver{position:absolute;top:168px;left:78px;font-family:var(--mono);font-size:220px;line-height:1;letter-spacing:-.05em;color:var(--teal);font-weight:700}
+  .vsub{position:absolute;top:430px;left:84px;font-size:30px;color:var(--ink)}
+  .vtag{position:absolute;top:500px;left:84px;font-family:var(--mono);font-size:20px;color:var(--dim)}
+  .feed{position:absolute;right:80px;top:214px;width:600px}
+  .feed .h{font-family:var(--mono);font-size:16px;color:var(--dim);letter-spacing:.12em;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .feed .e{display:grid;grid-template-columns:150px 1fr;gap:18px;padding:16px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  .feed .e .d{font-family:var(--mono);font-size:18px;color:var(--teal)}
+  .feed .e .t{font-size:22px;color:var(--ink)}
+  .feed .e .t span{display:block;font-size:17px;color:var(--dim);margin-top:3px}
+
+  /* timeline */
+  h2{position:absolute;top:138px;left:80px;font-family:var(--mono);font-size:46px;font-weight:700;letter-spacing:-.01em}
+  .note{position:absolute;top:208px;left:82px;font-family:var(--mono);font-size:18px;color:var(--dim)}
+  .flow{position:absolute;left:80px;top:262px;width:1080px}
+  .flow::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1px;background:linear-gradient(var(--teal),rgba(61,224,200,.15))}
+  .ev{position:relative;padding-left:48px;margin-bottom:26px}
+  .ev::before{content:"";position:absolute;left:0;top:7px;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--teal)}
+  .ev .d{font-family:var(--mono);font-size:18px;color:var(--teal)}
+  .ev h3{font-size:26px;font-weight:700;margin:4px 0 4px}
+  .ev p{font-size:22px;line-height:1.5;color:var(--dim)}
+  .stat{position:absolute;right:80px;top:262px;width:560px;border:1px solid var(--line);border-radius:10px;padding:10px 30px;background:rgba(255,255,255,.02)}
+  .stat .h{font-family:var(--mono);font-size:16px;color:var(--dim);letter-spacing:.12em;padding:18px 0;border-bottom:1px solid var(--line)}
+  .stat .r{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--line)}
+  .stat .r:last-child{border-bottom:0}
+  .stat .r b{font-family:var(--mono);font-size:44px;color:var(--teal);font-weight:700}
+  .stat .r span{font-size:20px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 封面 -->
+  <section class="slide">
+    <div class="top"><span>Fast-Https</span><span>release log · 2019—2024</span></div>
+    <div class="ver">1.0.0</div>
+    <div class="vsub">从 2019 到 2024 的开源成长</div>
+    <div class="vtag">iDealStudio · 华北电力大学</div>
+
+    <div class="feed">
+      <div class="h">RELEASE FEED</div>
+      <div class="e"><div class="d">2019</div><div class="t">开启 Go 语言产品线<span>第一批学习成员</span></div></div>
+      <div class="e"><div class="d">2023.07</div><div class="t">Fast-Https 正式立项<span>熊老师命名</span></div></div>
+      <div class="e"><div class="d">2024.01</div><div class="t">1.0.0 正式发布<span>Windows + Linux</span></div></div>
+      <div class="e"><div class="d">2024.05</div><div class="t">入驻 openEuler<span>大创国家级优秀</span></div></div>
+    </div>
+    <div class="foot">华北电力大学 iDealStudio 工作室</div>
+  </section>
+
+  <!-- 时间线 -->
+  <section class="slide">
+    <div class="top"><span>Fast-Https</span><span>release log · 发展大事记</span></div>
+    <h2>发展大事记</h2>
+    <div class="note">2019 — 2024 · 关键节点</div>
+
+    <div class="flow">
+      <div class="ev"><div class="d">2019</div><h3>开启 Go 语言产品线</h3><p>软件 1901 班李瑞阳成为第一批 Go 语言学习成员。</p></div>
+      <div class="ev"><div class="d">2020</div><h3>学习小组与首个开源项目</h3><p>发布「Go 语言接口代码生成器」，申报 Go 大创项目。</p></div>
+      <div class="ev"><div class="d">2023.06</div><h3>彭泽辰加入团队</h3><p>凭静逸教育系统与 C 语言 Web 请求处理框架获认可。</p></div>
+      <div class="ev"><div class="d">2023.07</div><h3>Fast-Https 正式立项</h3><p>熊老师命名，定位「足够快、天生支持 HTTPS」。</p></div>
+      <div class="ev"><div class="d">2024.01</div><h3>1.0.0 正式发布</h3><p>Windows 托盘版与 Linux 服务化能力成型。</p></div>
+      <div class="ev"><div class="d">2024.05</div><h3>入驻开源社区</h3><p>大创国家级优秀、挑战杯北京市三等奖、入驻 openEuler。</p></div>
+    </div>
+
+    <div class="stat">
+      <div class="h">BY THE NUMBERS</div>
+      <div class="r"><b>2019</b><span>起点</span></div>
+      <div class="r"><b>15</b><span>关键里程碑</span></div>
+      <div class="r"><b>1.0.0</b><span>首个正式版</span></div>
+      <div class="r"><b>openEuler</b><span>开源社区</span></div>
+    </div>
+    <div class="foot">华北电力大学 iDealStudio 工作室</div>
+  </section>
+
+</div>
+<script>
+(function(){
+  function fit(){
+    var s=Math.min(1,(window.innerWidth-52)/1920);
+    document.querySelectorAll('.slide').forEach(function(el){
+      el.style.transform='scale('+s+')';
+      el.style.marginBottom=(1080*s-1080)+'px';
+    });
+  }
+  window.addEventListener('resize',fit); fit();
+})();
+</script>
+</body>
+</html>

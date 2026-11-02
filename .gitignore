@@ -3,6 +3,7 @@
 /resources/
 /.hugo_build.lock
 
-# 旧版 Docusaurus 产物与设计原型（已由 Hugo 取代，仅本地留存）
+# 旧版 Docusaurus 产物（已由 Hugo 取代，仅本地留存）
 /_legacy/
-/design-demos/
+
+# 设计原型 design-demos/ 纳入版本控制：三方向初稿是设计决策的记录，需要可追溯

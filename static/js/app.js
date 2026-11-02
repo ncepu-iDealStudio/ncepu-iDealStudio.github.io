@@ -213,12 +213,15 @@
     var storyRail = document.getElementById('storyRail');
     var storyProgress = document.getElementById('storyProgress');
     var storyHud = document.getElementById('storyHud');
+    // HUD 下方小标签取自模板渲染的 i18n 文案，避免写死英文
+    var storyChip = storyHud && storyHud.querySelector('small');
+    var storyChipLabel = storyChip ? storyChip.textContent : '';
     var storyObs = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) {
           e.target.classList.add('in');
           if (e.target.dataset.year && storyHud) {
-            storyHud.innerHTML = e.target.dataset.year + '<small>CURRENT</small>';
+            storyHud.innerHTML = e.target.dataset.year + '<small>' + storyChipLabel + '</small>';
           }
         }
       });

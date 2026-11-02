@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>了解我们 · 滚动故事线（方向 B 迭代）</title>
+<style>
+  :root{
+    --bg:#F1F2F4; --paper:#FBFBFC; --ink:#15181D; --ink2:#3C4350; --dim:#6B7280;
+    --line:#D3D7DE; --red:#C0392B;
+    --sans:"Source Han Sans SC","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    --serif:"Songti SC","Noto Serif SC","Source Han Serif SC",Georgia,serif;
+    --mono:"JetBrains Mono","IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--red);color:#fff}
+
+  /* 进度条 + 当前年份 HUD */
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--red);z-index:80}
+  .hud{position:fixed;right:44px;top:50%;transform:translateY(-50%);z-index:60;text-align:right;pointer-events:none;
+    font-family:var(--serif);font-size:72px;font-weight:700;color:var(--red);line-height:1;opacity:.85}
+  .hud small{display:block;font-family:var(--mono);font-size:13px;font-weight:400;color:var(--dim);letter-spacing:.12em;margin-top:10px}
+
+  /* 封面 */
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 8vw;position:relative}
+  .hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:var(--red)}
+  .top{position:absolute;top:46px;left:8vw;right:8vw;display:flex;justify-content:space-between;
+    font-size:16px;color:var(--dim);border-bottom:1px solid var(--line);padding-bottom:14px;letter-spacing:.02em}
+  .years{font-family:var(--serif);font-size:clamp(84px,15vw,250px);line-height:.94;letter-spacing:-.045em;font-weight:700}
+  .years em{font-style:normal;color:var(--red)}
+  .hero h1{font-size:clamp(26px,2.6vw,44px);font-weight:800;margin-top:26px;letter-spacing:-.01em}
+  .hero .sub{font-size:clamp(16px,1.3vw,21px);line-height:1.8;color:var(--ink2);margin-top:16px;max-width:62ch}
+  .hint{position:absolute;bottom:54px;left:8vw;display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:14px;color:var(--dim)}
+  .hint .dot{width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.35)}50%{box-shadow:0 0 0 12px rgba(192,57,43,0)}}
+
+  /* 时间线 */
+  .scrolly{position:relative;max-width:1680px;margin:0 auto;padding:0 5vw}
+  .scrolly::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%);background:var(--line)}
+  .rail{position:absolute;left:50%;top:0;width:3px;transform:translateX(-50%);height:0;
+    background:linear-gradient(var(--red),#e8735f);z-index:0;box-shadow:0 0 18px rgba(192,57,43,.35)}
+
+  .node{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:10vw;align-items:center;
+    min-height:100vh;padding:10vh 0;z-index:1}
+  .node::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:16px;height:16px;border-radius:50%;background:var(--bg);border:3px solid var(--red);z-index:3}
+  .node .media{order:1;justify-self:end}
+  .node .body{order:2;text-align:left}
+  .node:nth-child(even) .media{order:2;justify-self:start}
+  .node:nth-child(even) .body{order:1;text-align:right}
+
+  .media{position:relative;width:100%;max-width:560px;aspect-ratio:4/3;overflow:hidden;border-radius:4px;
+    border:1px solid var(--line);background:linear-gradient(135deg,#DFE3E8,#C7CDD6)}
+  .media img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.1);transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
+  .node.in .media img{transform:scale(1)}
+  .media .cap{position:absolute;left:0;bottom:0;padding:7px 12px;background:rgba(21,24,29,.72);color:#fff;
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em}
+
+  .year{font-family:var(--serif);font-size:clamp(56px,6vw,96px);line-height:1;font-weight:700;color:var(--red);letter-spacing:-.03em}
+  .tag{display:inline-block;font-family:var(--mono);font-size:13px;color:var(--dim);letter-spacing:.14em;margin:14px 0 10px}
+  .body h2{font-size:clamp(26px,2.4vw,40px);font-weight:800;line-height:1.25;letter-spacing:-.01em;margin-bottom:14px}
+  .body p{font-size:clamp(16px,1.25vw,20px);line-height:1.75;color:var(--ink2);max-width:46ch}
+  .node:nth-child(even) .body p{margin-left:auto}
+
+  .media,.body{opacity:0;transform:translateY(46px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+  .node.in .media,.node.in .body{opacity:1;transform:none}
+  .node.in .body{transition-delay:.12s}
+
+  .end{min-height:80vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10vh 5vw}
+  .end .year{font-size:clamp(60px,7vw,120px)}
+  .end h2{font-size:clamp(24px,2.2vw,36px);margin:18px 0 12px}
+  .end p{font-size:18px;color:var(--ink2);max-width:52ch;line-height:1.8}
+  .end .footer{margin-top:40px;font-family:var(--mono);font-size:14px;color:var(--dim);border-top:1px solid var(--line);padding-top:18px}
+
+  @media(max-width:900px){
+    .hud{display:none}
+    .scrolly::before,.rail{left:18px}
+    .node{grid-template-columns:1fr;gap:26px;padding:10vh 0 10vh 56px;min-height:auto}
+    .node::after{left:18px;top:50%}
+    .node .media,.node:nth-child(even) .media{order:1;justify-self:start;max-width:100%}
+    .node .body,.node:nth-child(even) .body{order:2;text-align:left}
+    .node:nth-child(even) .body p{margin-left:0}
+    .hero{padding:0 8vw}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="hud" id="hud">开始<small>CURRENT</small></div>
+
+<header class="hero">
+  <div class="top"><span>Fast-Https 团队发展报告</span><span>华北电力大学 · iDealStudio</span></div>
+  <div class="years">2019<em>—</em>至今</div>
+  <h1>一条 Go 语言产品线的成长</h1>
+  <p class="sub">从学习小组到正式立项，从 1.0.0 到 openEuler 社区。向下滚动，按时间顺序看这条产品线如何一步步长出来。</p>
+  <div class="hint"><span class="dot"></span>向下滚动 · 开始</div>
+</header>
+
+<main class="scrolly" id="scrolly">
+  <div class="rail" id="rail"></div>
+
+  <section class="node" data-year="2019">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2019/1200/900" alt="2019 起点占位图" loading="lazy"><figcaption class="cap">2019 · 起点</figcaption></figure>
+    <div class="body"><div class="year">2019</div><div class="tag">开始</div><h2>开启 Go 语言产品线</h2><p>工作室正式开启 Go 语言技术学习和产品线，软件 1901 班李瑞阳成为第一批 Go 语言学习成员。</p></div>
+  </section>
+
+  <section class="node" data-year="2020">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2020/1200/900" alt="2020 占位图" loading="lazy"><figcaption class="cap">2020 · 学习小组</figcaption></figure>
+    <div class="body"><div class="year">2020</div><div class="tag">学习</div><h2>学习小组与首个开源项目</h2><p>成立 Go 语言学习小组，张亿贺、彭博、刘浩宇加入；4 月发布「Go 语言接口代码生成器」，并由刘浩宇负责申报 Go 语言大创项目。</p></div>
+  </section>
+
+  <section class="node" data-year="2022">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2022/1200/900" alt="2022 占位图" loading="lazy"><figcaption class="cap">2022 · 探索</figcaption></figure>
+    <div class="body"><div class="year">2022</div><div class="tag">探索</div><h2>基于 IPFS 的去中心化 Blog</h2><p>张亿贺负责开发一款使用 Go 语言、基于 IPFS 的开源 Blog 发布系统，可构建无服务器、去中心化的发布与管理方案。</p></div>
+  </section>
+
+  <section class="node" data-year="2023.06">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2023a/1200/900" alt="2023.06 占位图" loading="lazy"><figcaption class="cap">2023.06 · 组队</figcaption></figure>
+    <div class="body"><div class="year">2023.06</div><div class="tag">组队</div><h2>彭泽辰加入团队</h2><p>凭已商业化的静逸教育支援填报辅助系统与一个开源的 C 语言 Web 请求处理框架获得认可，成为 Fast-Https 的主要创始人。</p></div>
+  </section>
+
+  <section class="node" data-year="2023.07">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2023b/1200/900" alt="2023.07 占位图" loading="lazy"><figcaption class="cap">2023.07 · 立项</figcaption></figure>
+    <div class="body"><div class="year">2023.07</div><div class="tag">立项</div><h2>Fast-Https 正式立项</h2><p>为解决 SSL 证书到期导致的应用访问问题，团队用 Go 做出原型。熊老师将项目命名为 Fast-Https——足够快，且天生支持 HTTPS 与 SSL 认证。</p></div>
+  </section>
+
+  <section class="node" data-year="2023.09">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2023c/1200/900" alt="2023.09 占位图" loading="lazy"><figcaption class="cap">2023.09 · 发布</figcaption></figure>
+    <div class="body"><div class="year">2023.09</div><div class="tag">发布</div><h2>Windows 版本与托盘程序</h2><p>确定桌面应用需求，采用 goreleaser 多平台打包，改进日志与后台运行控制；9 月 24 日 Windows 版本正式发布。</p></div>
+  </section>
+
+  <section class="node" data-year="2023.10">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2023d/1200/900" alt="2023.10 占位图" loading="lazy"><figcaption class="cap">2023.10 · 模块化</figcaption></figure>
+    <div class="body"><div class="year">2023.10</div><div class="tag">模块化</div><h2>安全模块与模块化封装</h2><p>新增 safe、cache、auth 等功能模块；借鉴 caddy、gin-gonic 等项目的设计，规范各业务模块的执行流程。</p></div>
+  </section>
+
+  <section class="node" data-year="2023.12">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2023e/1200/900" alt="2023.12 占位图" loading="lazy"><figcaption class="cap">2023.12 · 测试</figcaption></figure>
+    <div class="body"><div class="year">2023.12</div><div class="tag">测试</div><h2>全面测试与 Linux 服务化</h2><p>张家悦加入负责测试；在 Windows 与 Linux 平台开展静态、单元与性能测试；新增 Linux 服务化启动与 Web 安全相关设计。</p></div>
+  </section>
+
+  <section class="node" data-year="2024.01">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2024a/1200/900" alt="2024.01 占位图" loading="lazy"><figcaption class="cap">2024.01 · 1.0.0</figcaption></figure>
+    <div class="body"><div class="year">2024.01</div><div class="tag">里程碑</div><h2>Fast-Https 1.0.0 正式发布</h2><p>Windows 与 Linux 双平台能力成型，功能模块稳定，产品迎来首个正式版本。</p></div>
+  </section>
+
+  <section class="node" data-year="2024.05">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-2024b/1200/900" alt="2024.05 占位图" loading="lazy"><figcaption class="cap">2024.05 · 社区</figcaption></figure>
+    <div class="body"><div class="year">2024.05</div><div class="tag">社区</div><h2>荣誉与 openEuler 社区</h2><p>大创项目定级国家级优秀；挑战杯首都大学生创业计划竞赛获北京市三等奖；通过华为审核，正式入驻 openEuler 社区。</p></div>
+  </section>
+
+  <section class="node" data-year="至今">
+    <figure class="media"><img src="https://picsum.photos/seed/fasthttps-now/1200/900" alt="至今 占位图" loading="lazy"><figcaption class="cap">至今 · 持续</figcaption></figure>
+    <div class="body"><div class="year">至今</div><div class="tag">持续中</div><h2>持续参赛与迭代</h2><p>团队继续参加中国国际大学生创新大赛、全国大学生信息安全竞赛等赛事，并在真实项目中持续打磨产品。</p></div>
+  </section>
+</main>
+
+<footer class="end">
+  <div class="year">开始 → 至今</div>
+  <h2>故事还在继续</h2>
+  <p>Fast-Https 由华北电力大学 iDealStudio 工作室发起并维护。欢迎在 Gitee 与 GitHub 上关注、提问或参与贡献。</p>
+  <div class="footer">华北电力大学 iDealStudio 工作室 · Fast-Https</div>
+</footer>
+
+<script>
+(function(){
+  var progress=document.getElementById('progress');
+  var hud=document.getElementById('hud');
+  var rail=document.getElementById('rail');
+  var scrolly=document.getElementById('scrolly');
+
+  // 节点浮现 + 当前年份
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        if(e.target.dataset.year){ hud.innerHTML=e.target.dataset.year+'<small>CURRENT</small>'; }
+      }
+    });
+  },{threshold:.35});
+  document.querySelectorAll('.node').forEach(function(n){ io.observe(n); });
+
+  // 轨道填充 + 顶部进度
+  function onScroll(){
+    var r=scrolly.getBoundingClientRect();
+    var total=scrolly.offsetHeight-window.innerHeight;
+    var passed=Math.min(Math.max(-r.top,0),Math.max(total,1));
+    var pct=total>0?passed/total:0;
+    rail.style.height=(passed+window.innerHeight*0.5)+'px';
+    progress.style.width=(pct*100)+'%';
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onScroll);
+  onScroll();
+})();
+</script>
+</body>
+</html>
