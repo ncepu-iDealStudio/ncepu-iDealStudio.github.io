@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # 需要升级 Hugo 时只改这里；请与本地 `hugo version` 保持一致
-  HUGO_VERSION: "0.169.0"
+  # 需要升级 Hugo 时只改这里;
+  HUGO_VERSION: "0.165.0"
 
 defaults:
   run:
