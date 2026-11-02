@@ -2,13 +2,13 @@
 {{- $alt := .alt | default "" -}}
 {{- $class := .class -}}
 {{- $img := resources.Get (strings.TrimPrefix "/assets/" $src) -}}
-{{- if $img -}}
-  {{- $out := $img -}}
-  {{- if gt $img.Width 1200 -}}
-    {{- $out = $img.Resize "1200x webp q82" -}}
-  {{- else -}}
-    {{- $out = $img.Resize (printf "%dx webp q82" $img.Width) -}}
+{{- if and $img (reflect.IsImageResource $img) -}}
+  {{- /* 扩展名与真实格式不符等情况下 Hugo 取不到宽高，Width 为 0，此时按 1200 兜底，避免生成 "0x" 这种无效规格 */ -}}
+  {{- $target := $img.Width -}}
+  {{- if or (eq $target 0) (gt $target 1200) -}}
+    {{- $target = 1200 -}}
   {{- end -}}
+  {{- $out := $img.Resize (printf "%dx webp q82" $target) -}}
 <img src="{{ $out.RelPermalink }}" width="{{ $out.Width }}" height="{{ $out.Height }}" alt="{{ $alt }}" loading="lazy" decoding="async"{{ with $class }} class="{{ . }}"{{ end }}>
 {{- else -}}
 <img src="{{ $src | relURL }}" alt="{{ $alt }}"{{ with $class }} class="{{ . }}"{{ end }}>

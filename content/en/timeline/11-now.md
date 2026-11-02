@@ -3,7 +3,7 @@ title: Still iterating, still going
 year: "now"
 tag: Ongoing
 caption: now · Ongoing
-image: /assets/images/timeline/22-now-iteration.png
+image: /assets/images/timeline/22-now-iteration.jpg
 weight: 22
 lead: Competitions define the boundaries of a problem; real projects expose real bugs.
 ---

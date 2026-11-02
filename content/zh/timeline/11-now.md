@@ -3,7 +3,7 @@ title: 持续迭代，仍在进行
 year: "至今"
 tag: 持续中
 caption: 至今 · 持续
-image: /assets/images/timeline/22-now-iteration.png
+image: /assets/images/timeline/22-now-iteration.jpg
 weight: 22
 lead: 比赛划定问题的边界，真实项目暴露真实的 bug。
 ---
