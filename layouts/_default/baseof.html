@@ -1,5 +1,9 @@
 <!doctype html>
-<html lang="{{ .Site.Language.Locale | default .Site.Language.Lang }}">
+{{- /* .Site.Language.Locale 是 Hugo 0.15x 才有的字段，Cloudflare 镜像默认 0.147 会直接报错，
+       这里改为按语言码映射，任何版本都能用；新增语言时补一行即可 */ -}}
+{{- $lang := .Site.Language.Lang -}}
+{{- $locale := index (dict "zh" "zh-CN" "en" "en-US") $lang | default $lang -}}
+<html lang="{{ $locale }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
