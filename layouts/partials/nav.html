@@ -19,8 +19,12 @@
     </nav>
     <div class="nav-right">
       <div class="lang-switch" role="group" aria-label="{{ i18n "langSwitchAria" }}">
-        {{- /* 不用 hugo.Sites：该全局函数在 Hugo 0.147 尚不存在。改用首页的各语言译本枚举，
-               拿到每个语言的首页作为兜底链接，再用当前页的译本覆盖成同页链接 */ -}}
+        {{- /* 只使用长期存在的 API，兼容不同 Hugo 版本：
+               1. 用首页的各语言译本枚举语言，不用 hugo.Sites（0.147 无此函数）
+               2. 语言显示名走本地字典，不用 .Language.Label（0.158 新增）
+                  也不用 .Language.LanguageName（0.158 起弃用）
+               新增语言时，这里的字典和 baseof.html 里的 locale 映射各补一行 */ -}}
+        {{- $names := dict "zh" "中文" "en" "English" -}}
         {{ range $cur.Site.Home.AllTranslations }}
           {{ $s := . }}
           {{ $lang := $s.Language.Lang }}
@@ -28,7 +32,7 @@
           {{ range $cur.AllTranslations }}
             {{ if eq .Language.Lang $lang }}{{ $href = .RelPermalink }}{{ end }}
           {{ end }}
-          <a href="{{ $href }}" lang="{{ $lang }}" hreflang="{{ $lang }}"{{ if eq $lang $cur.Language.Lang }} class="on" aria-current="true"{{ end }}>{{ $s.Language.Label }}</a>
+          <a href="{{ $href }}" lang="{{ $lang }}" hreflang="{{ $lang }}"{{ if eq $lang $cur.Language.Lang }} class="on" aria-current="true"{{ end }}>{{ index $names $lang | default $lang }}</a>
         {{ end }}
       </div>
       <div class="nav-search">
