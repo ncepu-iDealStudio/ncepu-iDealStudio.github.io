@@ -5,7 +5,8 @@
 {{- if hasPrefix $dest "/assets/images/" -}}
   {{- $img = resources.Get (strings.TrimPrefix "/assets/" $dest) -}}
 {{- end -}}
-{{- if and $img (reflect.IsImageResource $img) -}}
+{{- /* 同 img.html：用 ResourceType 代替 reflect.IsImageResource，兼容旧版 Hugo */ -}}
+{{- if and $img (eq $img.ResourceType "image") -}}
   {{- /* 扩展名与真实格式不符等情况下 Hugo 取不到宽高，Width 为 0，此时按 1400 兜底，避免生成 "0x" 这种无效规格 */ -}}
   {{- $target := $img.Width -}}
   {{- if or (eq $target 0) (gt $target 1400) -}}

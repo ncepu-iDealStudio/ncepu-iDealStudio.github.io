@@ -2,7 +2,9 @@
 {{- $alt := .alt | default "" -}}
 {{- $class := .class -}}
 {{- $img := resources.Get (strings.TrimPrefix "/assets/" $src) -}}
-{{- if and $img (reflect.IsImageResource $img) -}}
+{{- /* 用 ResourceType 判断类型：reflect.IsImageResource 并非所有 Hugo 版本都提供。
+      and 会短路，$img 为 nil 时不会对右侧求值 */ -}}
+{{- if and $img (eq $img.ResourceType "image") -}}
   {{- /* 扩展名与真实格式不符等情况下 Hugo 取不到宽高，Width 为 0，此时按 1200 兜底，避免生成 "0x" 这种无效规格 */ -}}
   {{- $target := $img.Width -}}
   {{- if or (eq $target 0) (gt $target 1200) -}}
