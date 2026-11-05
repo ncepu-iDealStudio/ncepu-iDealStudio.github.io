@@ -49,25 +49,7 @@
   </div>
 </section>
 
-<section class="qs">
-  <div class="wrap">
-    <div class="sec-head"><div class="k">{{ i18n "qsKicker" }}</div><h2>{{ i18n "qsTitle" }}</h2></div>
-    <div class="steps">
-      <div class="step"><div class="no">01</div><h3>{{ i18n "qs1t" }}</h3><p>{{ i18n "qs1p" }}</p><a href="{{ site.Params.linkInstall }}">{{ i18n "qs1a" }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-      <div class="step"><div class="no">02</div><h3>{{ i18n "qs2t" }}</h3><p>{{ i18n "qs2p" }}</p><a href="{{ site.Params.linkTutorial }}">{{ i18n "qs2a" }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-      <div class="step"><div class="no">03</div><h3>{{ i18n "qs3t" }}</h3><p>{{ i18n "qs3p" }}</p><a href="{{ site.Params.linkHttps }}">{{ i18n "qs3a" }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-    </div>
-  </div>
-
-</section>
-
-<section class="enter">
-  <div class="wrap enter-in">
-    <a href="{{ site.Params.linkTutorial }}"><div class="l">{{ i18n "enter1l" }}</div><h3>{{ i18n "enter1t" }}</h3><p>{{ i18n "enter1p" }}</p></a>
-    <a href="{{ site.Params.linkInstall }}"><div class="l">{{ i18n "enter2l" }}</div><h3>{{ i18n "enter2t" }}</h3><p>{{ i18n "enter2p" }}</p></a>
-    <a href="{{ .Site.Params.github }}"><div class="l">{{ i18n "enter3l" }}</div><h3>{{ i18n "enter3t" }}</h3><p>{{ i18n "enter3p" }}</p></a>
-  </div>
-</section>
+{{ partial "architecture.html" . }}
 
 {{ partial "footer.html" . }}
 {{ end }}

@@ -137,6 +137,93 @@ h1.title .hl{color:var(--accent);border-bottom:2px solid var(--accent);padding-b
 .enter h3{font-family:var(--serif);font-size:18px;font-weight:700;margin:9px 0 5px}
 .enter p{font-size:13.5px;color:var(--ink-3)}
 
+/* ---------- HOME : ARCHITECTURE TRACE ---------- */
+/* 真机剖面：外圈是请求环路，内圈是模块与依赖，底部是组合根。
+   命令一跑，光点沿真实代码顺序推进；可拔插的钩子用实心/虚线区分 */
+.trace-lede{font-size:14px;color:var(--ink-3);line-height:1.75;max-width:64ch;margin-top:12px}
+.trace-shell{margin-top:26px;background:var(--paper);border:1px solid var(--line)}
+.trace-bar{display:flex;align-items:stretch;border-bottom:1px solid var(--line)}
+.trace-tag{display:flex;align-items:center;padding:0 14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--ink-3);border-right:1px solid var(--line-2)}
+.trace-form{flex:1;display:flex;align-items:center;min-width:0}
+.trace-sig{padding-left:14px;font-family:var(--mono);font-size:14px;line-height:1;color:var(--accent)}
+.trace-form input{flex:1;min-width:0;border:0;outline:0;background:none;padding:14px 12px;font-family:var(--mono);font-size:13.5px;color:var(--ink)}
+.trace-form button{border:0;background:var(--ink);color:#fff;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;padding:0 22px;cursor:pointer;transition:background .18s}
+.trace-form button:hover{background:var(--accent)}
+.trace-st{display:flex;align-items:center;padding:0 16px;border-left:1px solid var(--line-2);font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--ink-3);white-space:nowrap}
+.trace-st.live{color:var(--accent);animation:tracePulse 1s steps(2,end) infinite}
+.trace-st.done{color:var(--ink)}
+.trace-st.err{color:var(--accent-deep)}
+@keyframes tracePulse{50%{opacity:.35}}
+
+.trace-mw{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--bg)}
+.trace-mw-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:4px}
+.trace-sw{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;background:var(--paper);border:1px solid var(--line);cursor:pointer;transition:.18s}
+.trace-sw::before{content:"";width:6px;height:6px;flex:none;border:1px solid var(--line);background:transparent;transition:.18s}
+.trace-sw b{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink-3);transition:.18s}
+.trace-sw i{font-style:normal;font-family:var(--mono);font-size:9.5px;color:#A7AFBA}
+.trace-sw:hover{border-color:var(--accent)}
+.trace-sw.on{border-color:var(--ink)}
+.trace-sw.on::before{background:var(--accent);border-color:var(--accent)}
+.trace-sw.on b{color:var(--ink)}
+.trace-sw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.trace-grid{display:grid;grid-template-columns:minmax(0,1fr) 272px}
+.trace-board{padding:4px 8px 8px;min-width:0}
+.trace-board svg{display:block;width:100%;height:auto}
+.trace-side{border-left:1px solid var(--line);padding:12px 14px 14px;min-width:0}
+.trace-side h4{font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+.trace-log{font-family:var(--mono);font-size:11px;line-height:1.6;max-height:348px;overflow-y:auto}
+.trace-log p{display:flex;gap:7px;padding:3px 0;border-bottom:1px solid var(--line-2);white-space:nowrap;overflow:hidden}
+.trace-log .n{flex:none;width:86px;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
+.trace-log .m{flex:1;min-width:0;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis}
+.trace-log .c{flex:none;width:30px;text-align:right;font-size:9.5px}
+.trace-log .c.ok{color:var(--ink-3)}
+.trace-log .c.err{color:var(--accent);font-weight:600}
+.trace-log .skip .n,.trace-log .skip .m{color:#AEB6C1}
+.trace-log .sys .n{color:var(--accent)}
+.trace-call{display:flex;align-items:flex-start;gap:16px;padding:13px 16px 14px;border-top:1px solid var(--line);background:var(--bg);min-height:74px}
+.trace-call-i{flex:none;padding-top:2px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ink-3);white-space:nowrap}
+.trace-call-b{flex:1;min-width:0}
+.trace-call-b b{display:block;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink-3);transition:color .18s}
+.trace-call-b p{margin-top:4px;font-size:12.5px;line-height:1.65;color:var(--ink-2);max-width:70ch}
+.trace-call-c{flex:none;padding-top:2px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink-3)}
+.trace-call-c.err{color:var(--accent);font-weight:600}
+.trace-call-c.muted{color:#AEB6C1}
+.trace-call.on{background:var(--paper)}
+.trace-call.on .trace-call-b b{color:var(--accent)}
+.trace-skip{margin-left:auto;padding:5px 10px;border:1px solid var(--line);background:transparent;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--ink-3);cursor:pointer;transition:.18s}
+.trace-skip:hover{border-color:var(--ink);color:var(--ink)}
+.trace-hint{margin-top:12px;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--ink-3)}
+
+.trace-board .lane{fill:none;stroke:var(--line);stroke-width:1}
+.trace-board .pad{fill:var(--paper);stroke:#B9C0CA;stroke-width:1.4;transition:fill .18s,stroke .18s}
+.trace-board .pad.hit{fill:var(--accent);stroke:var(--accent)}
+.trace-board .pad.off{fill:none;stroke:#CDD3DB;stroke-dasharray:2 2}
+.trace-board .focus{fill:none;stroke:var(--accent);stroke-width:1;stroke-dasharray:2 3}
+.trace-board .nm{font-family:var(--mono);font-size:11.5px;fill:var(--ink)}
+.trace-board .nm.off{fill:#AEB6C1}
+.trace-board .nm.cur{fill:var(--accent);font-weight:600}
+.trace-board .rl{font-family:var(--mono);font-size:9.5px;fill:#8A93A0}
+.trace-board .zone{font-family:var(--mono);font-size:9px;fill:#9AA3B0;letter-spacing:.12em}
+.trace-board .trace{fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.trace-board .trace-h{fill:none;stroke:#C6CCD5;stroke-width:1.2;stroke-linejoin:round;opacity:.8}
+.trace-board .dot,.trace-board .halo{fill:var(--accent)}
+
+@media (max-width:960px){
+  .trace-grid{grid-template-columns:1fr}
+  .trace-side{border-left:0;border-top:1px solid var(--line)}
+  .trace-log{max-height:220px}
+}
+@media (max-width:720px){
+  /* 小屏上把板子横向滚动，保住等宽标识符的可读字号 */
+  .trace-board{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .trace-board svg{min-width:680px}
+}
+@media (max-width:560px){
+  .trace-bar{flex-wrap:wrap}
+  .trace-st{width:100%;padding:8px 14px;border-left:0;border-top:1px solid var(--line-2)}
+}
+
 footer{border-top:1px solid var(--line);background:var(--bg);padding:26px 0}
 .foot-in{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--ink-3)}
 .foot-in a:hover{color:var(--accent)}

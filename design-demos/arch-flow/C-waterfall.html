@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方向 C · 瀑布时序</title>
+<style>
+  :root{
+    --bg:#F1F2F4; --paper:#fff; --ink:#15181D; --ink-2:#3C4350; --ink-3:#6B7280;
+    --line:#D3D7DE; --line-2:#E5E8ED; --red:#C0392B; --red-soft:#FBEDEA;
+    --serif:"Noto Serif SC","Songti SC",Georgia,serif;
+    --sans:"IBM Plex Sans","Noto Sans SC","PingFang SC",system-ui,sans-serif;
+    --mono:"IBM Plex Mono","JetBrains Mono",Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);padding:52px 24px 96px}
+  .wrap{max-width:1000px;margin:0 auto}
+  .cap{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:14px}
+  h1{font-family:var(--serif);font-size:clamp(24px,3vw,32px);font-weight:700;letter-spacing:-.02em;line-height:1.2}
+  .lede{max-width:58ch;margin-top:12px;font-size:14px;line-height:1.8;color:var(--ink-3)}
+
+  .bar{display:flex;align-items:center;margin-top:30px;border:1px solid var(--line);background:var(--paper)}
+  .bar .tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-3);
+    padding:0 14px;align-self:stretch;display:flex;align-items:center;border-right:1px solid var(--line-2)}
+  .bar form{flex:1;display:flex}
+  .bar input{flex:1;border:0;outline:0;background:none;padding:15px 14px;font-family:var(--mono);font-size:13.5px;color:var(--ink)}
+  .bar button{border:0;background:var(--ink);color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.16em;padding:0 22px;cursor:pointer;transition:.15s}
+  .bar button:hover{background:var(--red)}
+
+  .wf{border:1px solid var(--line);border-top:0;background:var(--paper)}
+  .chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:14px 18px;border-bottom:1px solid var(--line-2);
+    font-family:var(--mono);font-size:11.5px;color:#B4BBC6}
+  .chain .h{color:var(--ink-3);margin-right:6px;letter-spacing:.12em}
+  .chain .s{transition:color .3s}
+  .chain .s.on{color:var(--ink)}
+  .chain .a{color:#D6DAE0}
+
+  .head,.r{display:grid;grid-template-columns:36px 54px 168px minmax(0,1fr) 62px;align-items:center}
+  .head{padding:9px 18px;border-bottom:1px solid var(--line-2);font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.14em;color:#9AA3B0;text-transform:uppercase}
+  .r{padding:0 18px;height:34px;border-bottom:1px solid var(--line-2);opacity:0;transform:translateY(-4px);
+    transition:opacity .28s,transform .28s}
+  .r.in{opacity:1;transform:none}
+  .r .no{font-family:var(--mono);font-size:10.5px;color:#B4BBC6}
+  .r .ly{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink-3)}
+  .r.l1 .ly{color:#9AA3B0}
+  .r .nm{font-family:var(--mono);font-size:12.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .r .track{position:relative;height:14px;background:
+    repeating-linear-gradient(90deg,var(--line-2) 0 1px,transparent 1px 25%)}
+  .r .track i{position:absolute;top:3px;height:8px;min-width:2px;background:var(--red);transform-origin:left center;
+    transform:scaleX(0);transition:transform .45s cubic-bezier(.16,1,.3,1)}
+  .r.in .track i{transform:scaleX(1)}
+  .r.hot .track i{background:var(--ink)}
+  .r .ms{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-align:right}
+
+  .foot{display:flex;justify-content:space-between;align-items:baseline;padding:13px 18px;
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .foot b{font-family:var(--serif);font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .foot .u{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-left:4px}
+  .empty{padding:40px 18px;font-family:var(--mono);font-size:12px;color:#A7AFBA}
+
+  .hint{margin-top:14px;font-family:var(--mono);font-size:12px;color:#8A96A4}
+  .hint b{color:var(--ink);font-weight:500}
+  @media (max-width:760px){
+    .head,.r{grid-template-columns:28px 34px 110px minmax(0,1fr) 52px;padding-left:12px;padding-right:12px}
+    .r .nm{font-size:11.5px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cap">方向 C</div>
+  <h1>瀑布时序</h1>
+  <p class="lede">把时间竖起来看：一次命令展开成一串阶段，每段标出所在层与耗时。Upstream 那根长条会自己说明问题——其余每一段都是零头。</p>
+
+  <div class="bar">
+    <span class="tag">CMD</span>
+    <form id="f">
+      <input id="cmd" value="curl https://demo.local/api/user" autocomplete="off" spellcheck="false" aria-label="命令">
+      <button type="submit">RUN</button>
+    </form>
+  </div>
+
+  <div class="wf">
+    <div class="chain" id="chain"></div>
+    <div class="head"><span>#</span><span>LAYER</span><span>STAGE</span><span>TIMELINE</span><span>MS</span></div>
+    <div id="rows"><p class="empty">等待命令</p></div>
+    <div class="foot"><span id="status">IDLE</span><span><b id="total">—</b><span class="u">ms</span></span></div>
+  </div>
+  <p class="hint">试试 <b>fast-https start</b> ／ <b>curl https://demo.local/api/user</b></p>
+</div>
+
+<script>
+(function(){
+  var rowsEl=document.getElementById('rows'), chainEl=document.getElementById('chain'),
+      totalEl=document.getElementById('total'), stEl=document.getElementById('status'), cmdEl=document.getElementById('cmd');
+
+  var LAYER={
+    'cobra CLI':'L1','cmd · init':'L1','config':'L1','jsonc · files':'L1','certmanager':'L1',
+    'Client':'L2','listener':'L2','filters':'L2','core.Services':'L2','core.Handler':'L2','response':'L2',
+    'appfirewall':'L3','proxy · ws · tcp':'L3','cache · compress':'L3',
+    'GuardianWAF':'L4','Upstream':'L4'
+  };
+
+  var ROUTES={
+    'fast-https start':[
+      ['cobra CLI',1.2],['cmd · init',2.4],['config',8.1],['jsonc · files',3.0],
+      ['certmanager',11.6],['core.Services',1.4]
+    ],
+    'curl https://demo.local/api/user':[
+      ['Client',0.2],['listener',0.8],['filters',0.6],['core.Services',0.3],['core.Handler',0.2],
+      ['appfirewall',0.4],['GuardianWAF',0.5],['proxy · ws · tcp',0.9],['Upstream',9.0],
+      ['cache · compress',0.6],['response',0.4]
+    ]
+  };
+
+  var timers=[], running=false;
+
+  function clear(){ timers.forEach(clearTimeout); timers=[]; }
+
+  function run(cmd){
+    if(running) return;
+    var spec=ROUTES[cmd.trim()];
+    clear(); rowsEl.innerHTML=''; chainEl.innerHTML=''; 
+
+    if(!spec){
+      rowsEl.innerHTML='<p class="empty">没有这条命令的时序。试试 fast-https start 或 curl …</p>';
+      totalEl.textContent='—'; stEl.textContent='IDLE'; return;
+    }
+    running=true; stEl.textContent='TRACING';
+
+    var max=Math.max.apply(null, spec.map(function(s){return s[1];}));
+    var sum=spec.reduce(function(a,s){return a+s[1];},0);
+    var acc=0;
+
+    // 链路面包屑
+    var h=document.createElement('span'); h.className='h'; h.textContent='PATH'; chainEl.appendChild(h);
+    spec.forEach(function(s,i){
+      if(i){ var a=document.createElement('span'); a.className='a'; a.textContent='→'; chainEl.appendChild(a); }
+      var e=document.createElement('span'); e.className='s'; e.dataset.i=i; e.textContent=s[0]; chainEl.appendChild(e);
+    });
+
+    spec.forEach(function(s,i){
+      var pct=(s[1]/max)*100;
+      var r=document.createElement('div');
+      r.className='r '+LAYER[s[0]].toLowerCase()+(s[1]===max?' hot':'');
+      r.innerHTML='<span class="no">'+('0'+(i+1)).slice(-2)+'</span>'+
+        '<span class="ly">'+LAYER[s[0]]+'</span>'+
+        '<span class="nm">'+s[0]+'</span>'+
+        '<span class="track"><i style="left:'+(acc/sum*100)+'%;width:'+(s[1]/sum*100)+'%"></i></span>'+
+        '<span class="ms">'+s[1].toFixed(1)+'</span>';
+      rowsEl.appendChild(r);
+      acc+=s[1];
+
+      timers.push(setTimeout(function(){
+        r.classList.add('in');
+        var node=chainEl.querySelector('.s[data-i="'+i+'"]');
+        if(node) node.classList.add('on');
+        totalEl.textContent=acc.toFixed(1);
+      }, 130+i*150));
+    });
+
+    timers.push(setTimeout(function(){
+      stEl.textContent='DONE · '+spec.length+' hops';
+      running=false;
+    }, 200+spec.length*150));
+  }
+
+  document.getElementById('f').addEventListener('submit',function(e){
+    e.preventDefault();
+    running=false; run(cmdEl.value);
+  });
+
+  setTimeout(function(){ run(cmdEl.value); }, 420);
+})();
+</script>
+</body>
+</html>

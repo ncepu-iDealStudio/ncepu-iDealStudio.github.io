@@ -1,0 +1,595 @@
+<section class="sec trace" id="arch"
+  data-l1="{{ i18n "archL1t" }}" data-l2="{{ i18n "archL2t" }}"
+  data-l3="{{ i18n "archL3t" }}" data-l4="{{ i18n "archL4t" }}"
+  data-idle="{{ i18n "trIdle" }}" data-unknown="{{ i18n "archUnknown" }}">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">{{ i18n "archKicker" }}</div>
+      <h2>{{ i18n "archTitle" }}</h2>
+      <p class="trace-lede">{{ i18n "archLede" }}</p>
+    </div>
+
+    <div class="trace-shell">
+      <div class="trace-bar">
+        <span class="trace-tag">{{ i18n "archCmdLbl" }}</span>
+        <form class="trace-form" id="trForm" autocomplete="off">
+          <span class="trace-sig" aria-hidden="true">❯</span>
+          <input id="trCmd" value="curl https://demo.local/api/user" spellcheck="false" aria-label="{{ i18n "archCmdLbl" }}">
+          <button type="submit">{{ i18n "archRun" }}</button>
+        </form>
+        <span class="trace-st" id="trSt" aria-live="polite">IDLE</span>
+      </div>
+
+      <div class="trace-mw">
+        <span class="trace-mw-lbl">{{ i18n "archMwTitle" }}</span>
+        <button class="trace-sw on" type="button" data-mw="safe" aria-pressed="true"><b>safe</b><i>limit / blocklist</i></button>
+        <button class="trace-sw" type="button" data-mw="auth" aria-pressed="false"><b>auth</b><i>basic realm</i></button>
+        <button class="trace-sw" type="button" data-mw="waf" aria-pressed="false"><b>appfirewall</b><i>WAF check</i></button>
+        <button class="trace-sw on" type="button" data-mw="compress" aria-pressed="true"><b>compress</b><i>static gzip/br</i></button>
+        <button class="trace-sw" type="button" data-mw="cache" aria-pressed="false"><b>cache</b><i>proxy only</i></button>
+        <button class="trace-skip" type="button" id="trSkip">{{ i18n "trSkip" }}</button>
+      </div>
+
+      <div class="trace-grid">
+        <div class="trace-board">
+          <svg id="trSvg" viewBox="0 0 1000 392" role="img" aria-label="{{ i18n "archTitle" }}"></svg>
+        </div>
+        <div class="trace-side">
+          <h4>{{ i18n "archLogTitle" }}</h4>
+          <div class="trace-log" id="trLog" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="trace-call" id="trCall" aria-live="polite">
+        <span class="trace-call-i" id="trCallIdx">—</span>
+        <div class="trace-call-b">
+          <b id="trCallT">{{ i18n "archMwTitle" }}</b>
+          <p id="trCallD">{{ i18n "trIdle" }}</p>
+        </div>
+        <span class="trace-call-c" id="trCallC"></span>
+      </div>
+    </div>
+
+    <p class="trace-hint">{{ i18n "archHint" }}</p>
+  </div>
+
+  {{- $steps := dict
+    "client"   (dict "t" (i18n "trClientT")   "d" (i18n "trClientD"))
+    "listener" (dict "t" (i18n "trListenerT") "d" (i18n "trListenerD"))
+    "safe"     (dict "t" (i18n "trSafeT")     "d" (i18n "trSafeD"))
+    "events"   (dict "t" (i18n "trEventsT")   "d" (i18n "trEventsD"))
+    "filters"  (dict "t" (i18n "trFiltersT")  "d" (i18n "trFiltersD"))
+    "auth"     (dict "t" (i18n "trAuthT")     "d" (i18n "trAuthD"))
+    "waf"      (dict "t" (i18n "trWafT")      "d" (i18n "trWafD"))
+    "handler"  (dict "t" (i18n "trHandlerT")  "d" (i18n "trHandlerD"))
+    "module"   (dict "t" (i18n "trModuleT")   "d" (i18n "trModuleD"))
+    "cache"    (dict "t" (i18n "trCacheT")    "d" (i18n "trCacheD"))
+    "target"   (dict "t" (i18n "trTargetT")   "d" (i18n "trTargetD"))
+    "compress" (dict "t" (i18n "trCompressT") "d" (i18n "trCompressD"))
+    "response" (dict "t" (i18n "trResponseT") "d" (i18n "trResponseD"))
+    "cli"      (dict "t" (i18n "trCliT")      "d" (i18n "trCliD"))
+    "init"     (dict "t" (i18n "trInitT")     "d" (i18n "trInitD"))
+    "config"   (dict "t" (i18n "trConfigT")   "d" (i18n "trConfigD"))
+    "confd"    (dict "t" (i18n "trConfdT")    "d" (i18n "trConfdD"))
+    "cert"     (dict "t" (i18n "trCertT")     "d" (i18n "trCertD"))
+    "listen"   (dict "t" (i18n "trListenT")   "d" (i18n "trListenD"))
+    "hooks"    (dict "t" (i18n "trHooksT")    "d" (i18n "trHooksD"))
+  -}}
+  <script type="application/json" id="trSteps">{{ $steps | jsonify | safeJS }}</script>
+
+  <script>
+  (function () {
+    var root = document.getElementById('arch');
+    var svg = document.getElementById('trSvg');
+    if (!root || !svg) return;
+
+    var NS = 'http://www.w3.org/2000/svg';
+    var logEl = document.getElementById('trLog');
+    var stEl = document.getElementById('trSt');
+    var cmdEl = document.getElementById('trCmd');
+    var formEl = document.getElementById('trForm');
+    var skipEl = document.getElementById('trSkip');
+    var callEl = document.getElementById('trCall');
+    var callIdx = document.getElementById('trCallIdx');
+    var callT = document.getElementById('trCallT');
+    var callD = document.getElementById('trCallD');
+    var callC = document.getElementById('trCallC');
+    var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var UNKNOWN = root.getAttribute('data-unknown') || 'no trace for this command';
+    var IDLE = root.getAttribute('data-idle') || '';
+
+    var STEPS = {};
+    try { STEPS = JSON.parse(document.getElementById('trSteps').textContent); } catch (e) { STEPS = {}; }
+
+    // 每个节点停留多久，让人读完这一句
+    var DWELL = 1600;
+
+    // 五个可拔插的中间件，默认只开限流与静态压缩
+    var MW = { safe: true, auth: false, waf: false, compress: true, cache: false };
+
+    var SKIP = {
+      safe: 'off · conn hook not wired',
+      auth: 'off · no auth block',
+      waf: 'off · engine nil · zero cost',
+      cache: 'off · proxy_cache.key empty',
+      compress: 'off · zip=none · identity'
+    };
+
+    // ---- 两条泳道：上面是请求（客户端 → 服务端），下面是响应（服务端 → 客户端）----
+    var LANE_Y = 150, RES_Y = 250, BOOT_Y = 328;
+
+    var REQ = [
+      { id: 'client',   x: 70,  lbl: 'Client',       role: 'HTTP/1.1 · TLS · H2', tier: 1 },
+      { id: 'listener', x: 158, lbl: 'listener',     role: 'sockets / TLS / H2',  tier: 2 },
+      { id: 'safe',     x: 246, lbl: 'safe',         role: 'limit / blocklist',   tier: 1, mw: 'safe' },
+      { id: 'events',   x: 334, lbl: 'events',       role: 'parse · host check',  tier: 2 },
+      { id: 'filters',  x: 422, lbl: 'filters',      role: 'pick location',       tier: 1 },
+      { id: 'auth',     x: 510, lbl: 'auth',         role: 'basic realm',         tier: 2, mw: 'auth' },
+      { id: 'waf',      x: 598, lbl: 'appfirewall',  role: 'WAF hook',            tier: 1, mw: 'waf' },
+      { id: 'handler',  x: 686, lbl: 'core.Handler', role: 'type → module',       tier: 2 },
+      { id: 'module',   x: 774, lbl: 'proxy',        role: 'dispatch target',     tier: 1 },
+      { id: 'cache',    x: 862, lbl: 'cache',        role: 'proxy only',          tier: 2, mw: 'cache' },
+      { id: 'target',   x: 944, lbl: 'Upstream',     role: 'origin server',       tier: 1 }
+    ];
+    REQ.forEach(function (n) { n.y = LANE_Y; });
+
+    var RES = [
+      { id: 'compress', x: 700, y: RES_Y, lbl: 'compress', role: 'static only',        tier: 1, mw: 'compress' },
+      { id: 'response', x: 520, y: RES_Y, lbl: 'response', role: 'headers + security', tier: 2 }
+    ];
+
+    var BOOT = [
+      { id: 'cli',    x: 86,  lbl: 'cobra CLI',   role: 'start / reload',       tier: 0 },
+      { id: 'init',   x: 214, lbl: 'cmd · init',  role: 'handlers + hooks',     tier: 0 },
+      { id: 'config', x: 342, lbl: 'config',      role: 'atomic snapshot',      tier: 0 },
+      { id: 'confd',  x: 470, lbl: 'conf.d/site', role: 'include / write-back', tier: 0 },
+      { id: 'cert',   x: 598, lbl: 'certmanager', role: 'ACME control',         tier: 0 },
+      { id: 'listen', x: 726, lbl: 'listeners',   role: 'sockets + certs',      tier: 0 },
+      { id: 'hooks',  x: 854, lbl: 'afterListen', role: 'safe · WAF · dynlog',  tier: 0 }
+    ];
+    BOOT.forEach(function (n) { n.y = BOOT_Y; });
+
+    var NODES = {}, pads = {}, names = {};
+    REQ.concat(RES, BOOT).forEach(function (n) { NODES[n.id] = n; });
+
+    function el(tag, attrs, parent) {
+      var e = document.createElementNS(NS, tag);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      (parent || svg).appendChild(e);
+      return e;
+    }
+    function txt(x, y, cls, str, anchor) {
+      var t = el('text', { x: x, y: y, 'class': cls });
+      if (anchor) t.setAttribute('text-anchor', anchor);
+      t.textContent = str;
+      return t;
+    }
+
+    // 层标注
+    txt(14, 88, 'zone', 'L2 · ' + root.getAttribute('data-l2'));
+    txt(700, 316, 'zone', 'L3 · ' + root.getAttribute('data-l3') + ' ／ L4 · ' + root.getAttribute('data-l4'));
+    txt(14, 314, 'zone', 'L1 · ' + root.getAttribute('data-l1'));
+    txt(78, 166, 'zone', 'request →');
+    txt(78, 244, 'zone', '← response');
+
+    // 泳道与连接线
+    el('path', { d: 'M 70 150 L 944 150', 'class': 'lane' });
+    el('path', { d: 'M 944 150 L 944 250 L 70 250 L 70 150', 'class': 'lane' });
+    el('path', { d: 'M 86 328 L 854 328', 'class': 'lane' });
+
+    function place(n) {
+      var above = n.y === LANE_Y;
+      var d = n.tier === 2 ? 22 : 0;
+      if (above) return { nx: n.x, ny: n.y - 16 - d, rx: n.x, ry: n.y - 28 - d };
+      return { nx: n.x, ny: n.y + 18 + d, rx: n.x, ry: n.y + 30 + d };
+    }
+
+    REQ.concat(RES).forEach(function (n) {
+      pads[n.id] = el('circle', { cx: n.x, cy: n.y, r: 4, 'class': 'pad' });
+      var o = place(n);
+      names[n.id] = txt(o.nx, o.ny, 'nm', n.lbl, 'middle');
+      txt(o.rx, o.ry, 'rl', n.role, 'middle');
+    });
+    BOOT.forEach(function (n) {
+      pads[n.id] = el('rect', { x: n.x - 3.6, y: n.y - 3.6, width: 7.2, height: 7.2, 'class': 'pad' });
+      var o = place(n);
+      names[n.id] = txt(o.nx, o.ny, 'nm', n.lbl, 'middle');
+      txt(o.rx, o.ry, 'rl', n.role, 'middle');
+    });
+
+    var hist = el('g', {});
+    var live = el('g', {});
+    var focus = el('circle', { r: 9, 'class': 'focus' });
+    var halo = el('circle', { r: 8, 'class': 'halo' });
+    var dot = el('circle', { r: 4, 'class': 'dot' });
+    focus.style.opacity = 0;
+    halo.style.opacity = 0;
+    dot.style.opacity = 0;
+
+    // ---- 走线：直线泳道 + 关掉的中间件从下方/上方绕开 ----
+    function dist(p, q) { return Math.hypot(p[0] - q[0], p[1] - q[1]); }
+
+    function dipPoints(x, y, up) {
+      var out = [], span = 30, amp = 13;
+      for (var i = 0; i <= 12; i++) {
+        var t = i / 12;
+        out.push([x - span + 2 * span * t, y + (up ? -1 : 1) * amp * Math.sin(Math.PI * t)]);
+      }
+      return out;
+    }
+
+    function buildRoute(tokens) {
+      var pts = [], marks = [];
+
+      tokens.forEach(function (t) {
+        if (t.dip) {
+          var d = NODES[t.dip];
+          var dp = dipPoints(d.x, d.y, d.y === RES_Y);
+          if (d.y === RES_Y) dp.reverse();
+          pts = pts.concat(dp);
+          marks.push({ id: t.dip, log: SKIP[t.dip], skip: true, idx: pts.length - 1 });
+          return;
+        }
+        if (t.cross !== undefined) {
+          var idx = pts.length;
+          pts.push([t.cross, LANE_Y]);
+          pts.push([t.cross, RES_Y]);
+          if (t.log) marks.push({ id: 'response', log: t.log, code: t.code, idx: idx });
+          return;
+        }
+        var n = NODES[t.id];
+        pts.push([n.x, t.y !== undefined ? t.y : n.y]);
+        if (t.log) marks.push({ id: t.id, log: t.log, code: t.code, idx: pts.length - 1 });
+      });
+
+      var cum = [0], total = 0;
+      for (var i = 1; i < pts.length; i++) { total += dist(pts[i - 1], pts[i]); cum.push(total); }
+      marks.forEach(function (m) { m.len = cum[m.idx] || 0; });
+
+      return {
+        pts: pts, cum: cum, total: total, marks: marks,
+        d: 'M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L')
+      };
+    }
+
+    function pointAt(P, d) {
+      if (d <= 0) return P.pts[0];
+      if (d >= P.total) return P.pts[P.pts.length - 1];
+      for (var i = 1; i < P.pts.length; i++) {
+        if (d <= P.cum[i]) {
+          var k = (d - P.cum[i - 1]) / (P.cum[i] - P.cum[i - 1] || 1);
+          return [
+            P.pts[i - 1][0] + (P.pts[i][0] - P.pts[i - 1][0]) * k,
+            P.pts[i - 1][1] + (P.pts[i][1] - P.pts[i - 1][1]) * k
+          ];
+        }
+      }
+      return P.pts[P.pts.length - 1];
+    }
+
+    function setLabel(id, str) { if (names[id]) names[id].textContent = str; }
+
+    function say(name, msg, code, cls) {
+      var p = document.createElement('p');
+      if (cls) p.className = cls;
+      p.innerHTML = '<span class="n"></span><span class="m"></span><span class="c"></span>';
+      p.querySelector('.n').textContent = name;
+      p.querySelector('.m').textContent = msg;
+      var c = p.querySelector('.c');
+      if (code) {
+        c.textContent = code;
+        c.className = 'c ' + (/^[45]/.test(code) ? 'err' : 'ok');
+      }
+      logEl.appendChild(p);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // 节点说明卡：走到哪一站就换哪一段
+    var stepNo = 0, stepTotal = 0, curName = null;
+    function nmClass(id) {
+      var n = NODES[id];
+      return 'nm' + (n && n.mw && !MW[n.mw] ? ' off' : '');
+    }
+    function showCall(m, n) {
+      var s = STEPS[m.id] || {};
+      stepNo++;
+      callIdx.textContent = stepNo + ' / ' + stepTotal;
+      callT.textContent = s.t || m.id;
+      callD.textContent = s.d || m.log || '';
+      callC.textContent = m.skip ? 'SKIP' : (m.code || '');
+      callC.className = 'trace-call-c' + (m.skip ? ' muted' : (m.code && /^[45]/.test(m.code) ? ' err' : ''));
+      callEl.classList.add('on');
+      if (curName && names[curName]) names[curName].setAttribute('class', nmClass(curName));
+      curName = m.id;
+      if (names[m.id]) names[m.id].setAttribute('class', 'nm cur');
+      if (n) {
+        focus.setAttribute('cx', n.x);
+        focus.setAttribute('cy', n.y);
+        focus.style.opacity = m.skip ? 0 : 1;
+      }
+    }
+    function idleCall() {
+      if (curName && names[curName]) names[curName].setAttribute('class', nmClass(curName));
+      curName = null;
+      callIdx.textContent = '—';
+      callT.textContent = 'TRACE';
+      callD.textContent = IDLE;
+      callC.textContent = '';
+      callEl.classList.remove('on');
+      focus.style.opacity = 0;
+    }
+
+    function paintMw() {
+      REQ.concat(RES).forEach(function (n) {
+        if (!n.mw) return;
+        var on = !!MW[n.mw];
+        pads[n.id].setAttribute('class', 'pad' + (on ? '' : ' off'));
+        names[n.id].setAttribute('class', 'nm' + (on ? '' : ' off'));
+      });
+    }
+
+    // ---- 每条命令都按 events.go 的真实顺序排 ----
+    function tk(id, log, code, extra) {
+      var o = { id: id, log: log, code: code };
+      if (extra) for (var k in extra) o[k] = extra[k];
+      return o;
+    }
+    function mw(id, on, log, code) {
+      return on ? { id: id, log: log, code: code } : { dip: id };
+    }
+    function exitAt(seq, id, log, code, respLog) {
+      seq.push(tk(id, log, code));
+      seq.push({ cross: NODES[id].x, log: respLog, code: code });
+      seq.push(tk('client', 'conn closed', '', { y: RES_Y }));
+      seq.push(tk('client', '', '', { y: LANE_Y }));
+      return { code: code, seq: seq };
+    }
+    function backToClient(seq, log) {
+      seq.push(tk('client', log, '', { y: RES_Y }));
+      seq.push(tk('client', '', '', { y: LANE_Y }));
+    }
+
+    function routeStart() {
+      var seq = [];
+      seq.push(tk('cli', '$ fast-https start -c ./conf.d'));
+      seq.push(tk('init', 'register handlers ×4 · hook table ×7'));
+      seq.push(tk('config', 'parse jsonc → atomic snapshot swap'));
+      seq.push(tk('confd', 'read conf.d/*.json ×3 · mime ok'));
+      seq.push(tk('cert', 'load cert cache · 0 pending'));
+      seq.push(tk('listen', 'bind :443 ssl · :8080'));
+      seq.push(tk('hooks', 'safe.Init · WAF build · dynlog', '200'));
+      return { code: '200', seq: seq };
+    }
+
+    function routeReload() {
+      var seq = [];
+      seq.push(tk('cli', '$ fast-https reload'));
+      seq.push(tk('config', 'validate ok → snapshot swapped'));
+      seq.push(tk('listen', 'port diff: 1 updated · 0 added · 0 removed'));
+      seq.push(tk('hooks', 'safe counters reset · WAF rebuilt', '200'));
+      return { code: '200', seq: seq };
+    }
+
+    function routeFlood() {
+      var seq = [tk('client', '200 requests · 50 concurrent'), tk('listener', 'accept ×200 · keep-alive')];
+      if (MW.safe) {
+        return exitAt(seq, 'safe', 'bucket rps 210/20 → drop', '429', '429 Too Many Requests · conn closed');
+      }
+      seq.push(mw('safe', false));
+      seq.push(tk('events', 'parse ×200 ok'));
+      seq.push(tk('filters', 'location /api/ → proxy'));
+      seq.push(mw('auth', MW.auth, 'basic ok ×200'));
+      seq.push(mw('waf', MW.waf, 'check ×200 · 0 findings'));
+      seq.push(tk('handler', 'type=proxy_http → module'));
+      setLabel('module', 'proxy');
+      setLabel('target', 'Upstream');
+      seq.push(tk('module', 'dial ×50 · pool reuse'));
+      seq.push(mw('cache', MW.cache));
+      seq.push(tk('target', '200 ×200 · p99 14ms'));
+      seq.push({ cross: 944 });
+      seq.push(tk('response', 'write ×200 · h2 streams', '200'));
+      backToClient(seq, '200 ×200 · keep-alive');
+      return { code: '200', seq: seq };
+    }
+
+    function routeCurl(cmd) {
+      var m = cmd.match(/https?:\/\/[^\s'"]+/);
+      var url = m ? m[0] : 'https://demo.local/';
+      var path = url.replace(/^https?:\/\/[^/]+/, '') || '/';
+      var isStatic = path === '/' || /\.(html?|css|js|json|png|jpe?g|svg|ico|txt|woff2?)$/i.test(path);
+      var attack = /(['"]\s*(or|and)\s|\.\.\/|<script|union\s+select)/i.test(cmd);
+      var creds = /-u\s+\S+/.test(cmd);
+
+      var seq = [];
+      seq.push(tk('client', 'GET ' + path + ' · HTTP/2 · TLS1.3'));
+      seq.push(tk('listener', 'accept 10.0.0.7:52341 · h2'));
+      seq.push(mw('safe', MW.safe, 'bucket rps 12/20 · blocklist miss'));
+      seq.push(tk('events', 'parse 1.2KB · host demo.local'));
+      seq.push(tk('filters', 'location ' + (isStatic ? '/' : '/api/') + ' → ' + (isStatic ? 'static' : 'proxy')));
+
+      if (MW.auth && !creds) {
+        return exitAt(seq, 'auth', 'basic missing → 401', '401', '401 Unauthorized · WWW-Authenticate');
+      }
+      seq.push(MW.auth ? tk('auth', 'basic ok · realm="demo"') : { dip: 'auth' });
+
+      if (MW.waf && attack) {
+        return exitAt(seq, 'waf', 'sqli score 78 → block', '403', '403 Forbidden · conn closed');
+      }
+      seq.push(MW.waf ? tk('waf', 'check 0.4ms · 0 findings') : { dip: 'waf' });
+
+      seq.push(tk('handler', 'type=' + (isStatic ? 'local' : 'proxy_http') + ' → module'));
+      setLabel('module', isStatic ? 'static' : 'proxy');
+      setLabel('target', isStatic ? './httpdoc' : 'Upstream');
+      seq.push(tk('module', isStatic ? 'open ' + path + ' · 1.8KB' : 'dial 127.0.0.1:8081'));
+
+      if (isStatic) {
+        seq.push(tk('target', '200 OK · mtime · ETag'));
+        seq.push({ cross: 944 });
+        seq.push(MW.compress ? tk('compress', 'br · 1.8KB → 612B', '200') : { dip: 'compress' });
+      } else if (MW.cache) {
+        seq.push(tk('cache', 'HIT key=' + path + ' · 0ms', '200'));
+        seq.push({ cross: 862 });
+      } else {
+        seq.push({ dip: 'cache' });
+        seq.push(tk('target', '200 OK · 1.8KB · 9ms'));
+        seq.push({ cross: 944 });
+      }
+
+      seq.push(tk('response', 'write headers + security · h2 #1', '200'));
+      backToClient(seq, '200 OK · 1.8KB');
+      return { code: '200', seq: seq };
+    }
+
+    function parseCmd(raw) {
+      var c = (raw || '').trim();
+      if (!c) return null;
+      var low = c.toLowerCase();
+      if (low.indexOf('fast-https start') === 0 || low === 'start') return routeStart();
+      if (low.indexOf('fast-https reload') === 0 || low === 'reload') return routeReload();
+      if (low.indexOf('hey ') === 0 || /-n\s+\d+/.test(low)) return routeFlood();
+      if (low.indexOf('curl') === 0) return routeCurl(c);
+      return null;
+    }
+
+    var raf = 0, tick = 0, runId = 0, pos = 0, CP = null, curTrail = null;
+
+    function paintAt(cur) {
+      if (!CP) return;
+      var p = pointAt(CP, cur);
+      dot.setAttribute('cx', p[0]);
+      dot.setAttribute('cy', p[1]);
+      dot.style.opacity = 1;
+      halo.setAttribute('cx', p[0]);
+      halo.setAttribute('cy', p[1]);
+      halo.style.opacity = 0.16;
+      if (curTrail) curTrail.style.strokeDashoffset = CP.total - cur;
+    }
+
+    function tween(target, ms, done) {
+      var from = pos, t0 = Date.now();
+      if (ms <= 0) { pos = target; paintAt(pos); done(); return; }
+      function f() {
+        var k = Math.min(1, (Date.now() - t0) / ms);
+        pos = from + (target - from) * k;
+        paintAt(pos);
+        if (k < 1) { raf = requestAnimationFrame(f); }
+        else { done(); }
+      }
+      raf = requestAnimationFrame(f);
+    }
+
+    function run(cmd) {
+      runId++;
+      var mine = runId;
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (tick) { clearTimeout(tick); tick = 0; }
+
+      Array.prototype.slice.call(live.childNodes).forEach(function (n) {
+        n.setAttribute('class', 'trace-h');
+        n.style.strokeDashoffset = 0;
+        hist.appendChild(n);
+      });
+      while (hist.childNodes.length > 8) hist.removeChild(hist.firstChild);
+
+      Object.keys(pads).forEach(function (k) {
+        pads[k].setAttribute('class', 'pad' + (NODES[k].mw && !MW[NODES[k].mw] ? ' off' : ''));
+      });
+      logEl.innerHTML = '';
+      dot.style.opacity = 0;
+      halo.style.opacity = 0;
+      focus.style.opacity = 0;
+      pos = 0;
+
+      var spec = parseCmd(cmd);
+      lastSpec = spec;
+      if (!spec) {
+        stEl.textContent = 'NO ROUTE';
+        stEl.className = 'trace-st';
+        idleCall();
+        say('system', UNKNOWN, '', 'sys');
+        return;
+      }
+
+      var P = buildRoute(spec.seq);
+      var trail = el('path', { d: P.d, 'class': 'trace' }, live);
+      trail.style.strokeDasharray = P.total;
+      trail.style.strokeDashoffset = P.total;
+      CP = P;
+      curTrail = trail;
+
+      stEl.textContent = 'TRACING';
+      stEl.className = 'trace-st live';
+      stepNo = 0;
+      stepTotal = P.marks.length;
+
+      var mi = 0, last = 0;
+
+      function finish() {
+        if (mine !== runId) return;
+        dot.style.opacity = 0;
+        halo.style.opacity = 0;
+        stEl.textContent = spec.code === '200' ? 'DONE' : 'DONE · ' + spec.code;
+        stEl.className = 'trace-st' + (spec.code === '200' ? ' done' : ' err');
+      }
+
+      function nextStep() {
+        if (mine !== runId) return;
+        if (mi >= P.marks.length) { finish(); return; }
+        var mk = P.marks[mi++];
+        var span = Math.max(0, mk.len - last);
+        var ms = RM ? 0 : Math.max(300, Math.min(900, span * 1.6));
+        tween(mk.len, ms, function () {
+          if (mine !== runId) return;
+          last = mk.len;
+          if (!mk.skip && pads[mk.id]) pads[mk.id].setAttribute('class', 'pad hit');
+          say(mk.id, mk.log, mk.code, mk.skip ? 'skip' : '');
+          showCall(mk, NODES[mk.id]);
+          tick = setTimeout(nextStep, mk.skip ? 520 : (RM ? 300 : DWELL));
+        });
+      }
+
+      tick = setTimeout(nextStep, RM ? 60 : 360);
+    }
+
+    var lastSpec = null;
+
+    function skipToEnd() {
+      runId++;
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (tick) { clearTimeout(tick); tick = 0; }
+      dot.style.opacity = 0;
+      halo.style.opacity = 0;
+      if (CP) {
+        pos = CP.total;
+        if (curTrail) curTrail.style.strokeDashoffset = 0;
+      }
+      if (lastSpec) {
+        stEl.textContent = lastSpec.code === '200' ? 'DONE' : 'DONE · ' + lastSpec.code;
+        stEl.className = 'trace-st' + (lastSpec.code === '200' ? ' done' : ' err');
+      }
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('.trace-sw'), function (btn) {
+      btn.addEventListener('click', function () {
+        var k = btn.getAttribute('data-mw');
+        MW[k] = !MW[k];
+        btn.classList.toggle('on', MW[k]);
+        btn.setAttribute('aria-pressed', MW[k] ? 'true' : 'false');
+        paintMw();
+        run(cmdEl.value);
+      });
+    });
+
+    formEl.addEventListener('submit', function (e) {
+      e.preventDefault();
+      run(cmdEl.value);
+    });
+
+    skipEl.addEventListener('click', skipToEnd);
+
+    paintMw();
+    idleCall();
+    setTimeout(function () { run(cmdEl.value); }, 500);
+  })();
+  </script>
+</section>

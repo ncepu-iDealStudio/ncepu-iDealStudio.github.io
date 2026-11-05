@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方向 B · 走线板</title>
+<style>
+  :root{
+    --bg:#F1F2F4; --paper:#fff; --ink:#15181D; --ink-2:#3C4350; --ink-3:#6B7280;
+    --line:#D3D7DE; --line-2:#E5E8ED; --red:#C0392B; --red-soft:#FBEDEA;
+    --serif:"Noto Serif SC","Songti SC",Georgia,serif;
+    --sans:"IBM Plex Sans","Noto Sans SC","PingFang SC",system-ui,sans-serif;
+    --mono:"IBM Plex Mono","JetBrains Mono",Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);padding:52px 24px 96px}
+  .wrap{max-width:1100px;margin:0 auto}
+  .cap{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:14px}
+  h1{font-family:var(--serif);font-size:clamp(24px,3vw,32px);font-weight:700;letter-spacing:-.02em;line-height:1.2}
+  .lede{max-width:58ch;margin-top:12px;font-size:14px;line-height:1.8;color:var(--ink-3)}
+
+  .bar{display:flex;align-items:center;gap:0;margin-top:30px;border:1px solid var(--line);background:var(--paper)}
+  .bar .tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-3);
+    padding:0 14px;border-right:1px solid var(--line-2);align-self:stretch;display:flex;align-items:center}
+  .bar form{flex:1;display:flex;align-items:center}
+  .bar input{flex:1;border:0;outline:0;background:none;padding:15px 14px;
+    font-family:var(--mono);font-size:13.5px;color:var(--ink)}
+  .bar button{border:0;background:var(--ink);color:#fff;font-family:var(--mono);font-size:11px;
+    letter-spacing:.16em;padding:0 22px;align-self:stretch;cursor:pointer;transition:.15s}
+  .bar button:hover{background:var(--red)}
+
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 236px;gap:0;margin-top:0;border:1px solid var(--line);border-top:0;background:var(--paper)}
+  .board{position:relative;padding:8px 0 14px;min-width:0}
+  svg{display:block;width:100%;height:auto}
+
+  .band{stroke:var(--line);stroke-width:1}
+  .band-t{font-family:var(--mono);font-size:11px;fill:#9AA3B0;letter-spacing:.14em}
+  .pad{fill:var(--paper);stroke:#B9C0CA;stroke-width:1.4}
+  .pad.on{fill:var(--red);stroke:var(--red)}
+  .pn{font-family:var(--mono);font-size:12px;fill:var(--ink)}
+  .pr{font-family:var(--mono);font-size:10.5px;fill:#8A93A0}
+  .tr{fill:none;stroke:var(--red);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+  .tr-h{fill:none;stroke:#B9C0CA;stroke-width:1.2;stroke-linejoin:round;opacity:.55}
+  .dot{fill:var(--red)}
+
+  .side{border-left:1px solid var(--line);padding:14px 16px;font-family:var(--mono);font-size:11.5px}
+  .side h4{font-size:10.5px;letter-spacing:.16em;color:var(--ink-3);font-weight:400;margin-bottom:12px;text-transform:uppercase}
+  .run{padding:9px 0;border-bottom:1px solid var(--line-2);line-height:1.5}
+  .run:last-child{border-bottom:0}
+  .run .c{color:var(--ink);font-size:11px;word-break:break-all}
+  .run .m{color:var(--ink-3);font-size:10.5px;margin-top:3px}
+  .run.cur .c{color:var(--red)}
+  .empty{color:#A7AFBA;font-size:11px;line-height:1.7}
+
+  .hint{margin-top:14px;font-family:var(--mono);font-size:12px;color:#8A96A4}
+  .hint b{color:var(--ink);font-weight:500}
+  @media (max-width:860px){
+    .grid{grid-template-columns:1fr}
+    .side{border-left:0;border-top:1px solid var(--line)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cap">方向 B</div>
+  <h1>走线板</h1>
+  <p class="lede">四层压成四根总线，命令一跑，信号沿铜箔一路蚀刻过去。跑完的走线不会消失，变灰留在板上——多跑几次，你能直接比出两条命令各自走了哪些层。</p>
+
+  <div class="bar">
+    <span class="tag">CMD</span>
+    <form id="f">
+      <input id="cmd" value="curl https://demo.local/api/user" autocomplete="off" spellcheck="false" aria-label="命令">
+      <button type="submit">RUN</button>
+    </form>
+  </div>
+
+  <div class="grid">
+    <div class="board"><svg id="svg" viewBox="0 0 1000 412"></svg></div>
+    <div class="side">
+      <h4>走线记录</h4>
+      <div id="runs"><p class="empty">还没有走线。<br>输入命令后开始。</p></div>
+    </div>
+  </div>
+  <p class="hint">试试 <b>fast-https start</b> ／ <b>curl https://demo.local/api/user</b></p>
+</div>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('svg'), runsEl=document.getElementById('runs'), cmdEl=document.getElementById('cmd');
+
+  var BANDS=[{n:'L1',t:'组合根',y:74},{n:'L2',t:'运行时',y:172},{n:'L3',t:'可插拔模块',y:270},{n:'L4',t:'依赖',y:356}];
+
+  var N={
+    'cobra CLI':      {x:80, y:74},
+    'cmd · init':     {x:240,y:74},
+    'config':         {x:400,y:74},
+    'jsonc · files':  {x:560,y:74},
+    'certmanager':    {x:720,y:74},
+
+    'Client':         {x:80, y:172},
+    'listener':       {x:210,y:172},
+    'filters':        {x:340,y:172},
+    'core.Services':  {x:470,y:172},
+    'core.Handler':   {x:600,y:172},
+    'response':       {x:920,y:172},
+
+    'appfirewall':    {x:600,y:270},
+    'proxy · ws · tcp':{x:730,y:270},
+    'cache · compress':{x:920,y:270},
+
+    'GuardianWAF':    {x:600,y:356},
+    'Upstream':       {x:730,y:356}
+  };
+  var ROLE={
+    'cobra CLI':'start / reload / check','cmd · init':'wire handlers + hooks','config':'atomic snapshot',
+    'jsonc · files':'comments / atomic','certmanager':'ACME control',
+    'Client':'HTTP/1.1 · TLS · H2','listener':'sockets / TLS / H2','filters':'parse / route / limits',
+    'core.Services':'lifecycle hooks','core.Handler':'path type → module','response':'headers + security',
+    'appfirewall':'WAF adapter','proxy · ws · tcp':'upstream / upgrade','cache · compress':'disk LRU / gzip br',
+    'GuardianWAF':'WAF engine','Upstream':'origin server'
+  };
+
+  // 层带
+  BANDS.forEach(function(b){
+    var l=document.createElementNS(NS,'line');
+    l.setAttribute('x1',44);l.setAttribute('x2',980);l.setAttribute('y1',b.y);l.setAttribute('y2',b.y);
+    l.setAttribute('class','band');svg.appendChild(l);
+    var n=document.createElementNS(NS,'text');
+    n.setAttribute('x',10);n.setAttribute('y',b.y-10);n.setAttribute('class','band-t');
+    n.textContent=b.n;svg.appendChild(n);
+    var t=document.createElementNS(NS,'text');
+    t.setAttribute('x',10);t.setAttribute('y',b.y+18);t.setAttribute('class','band-t');
+    t.textContent=b.t;svg.appendChild(t);
+  });
+
+  // 焊盘
+  var pads={};
+  Object.keys(N).forEach(function(id){
+    var p=N[id];
+    var r=document.createElementNS(NS,'rect');
+    r.setAttribute('x',p.x-5);r.setAttribute('y',p.y-5);r.setAttribute('width',10);r.setAttribute('height',10);
+    r.setAttribute('class','pad');svg.appendChild(r);pads[id]=r;
+
+    var t=document.createElementNS(NS,'text');
+    t.setAttribute('x',p.x);t.setAttribute('y',p.y+21);t.setAttribute('text-anchor','middle');
+    t.setAttribute('class','pn');t.textContent=id;svg.appendChild(t);
+    var s=document.createElementNS(NS,'text');
+    s.setAttribute('x',p.x);s.setAttribute('y',p.y+34);s.setAttribute('text-anchor','middle');
+    s.setAttribute('class','pr');s.textContent=ROLE[id];svg.appendChild(s);
+  });
+
+  var layer=document.createElementNS(NS,'g'); svg.appendChild(layer);   // 历史走线
+  var live=document.createElementNS(NS,'g');  svg.appendChild(live);    // 当前走线
+  var dot=document.createElementNS(NS,'circle');
+  dot.setAttribute('r',4); dot.setAttribute('class','dot'); dot.style.opacity=0; svg.appendChild(dot);
+
+  // 正交走线：同一 x 先竖后横，否则先横后竖
+  function route(ids){
+    var pts=[];
+    for(var i=0;i<ids.length;i++){
+      var p=N[ids[i]];
+      if(i===0){ pts.push([p.x,p.y]); continue; }
+      var q=N[ids[i-1]];
+      if(q.x===p.x){ pts.push([p.x,p.y]); }
+      else if(q.y===p.y){ pts.push([p.x,p.y]); }
+      else{
+        // 先到目标列，再换层
+        pts.push([p.x,q.y]); pts.push([p.x,p.y]);
+      }
+    }
+    return pts;
+  }
+  function dOf(pts){ return 'M'+pts.map(function(p){return p[0]+' '+p[1];}).join(' L'); }
+  function lenOf(pts){
+    var s=0; for(var i=1;i<pts.length;i++) s+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]); return s;
+  }
+
+  var ROUTES={
+    'fast-https start':{
+      ids:['cobra CLI','cmd · init','config','jsonc · files','certmanager','core.Services'],
+      ms:412
+    },
+    'curl https://demo.local/api/user':{
+      ids:['Client','listener','filters','core.Services','core.Handler','appfirewall','GuardianWAF',
+           'proxy · ws · tcp','Upstream','cache · compress','response'],
+      ms:12
+    }
+  };
+
+  var running=false;
+
+  function addRun(cmd,hops,ms){
+    if(runsEl.querySelector('.empty')) runsEl.innerHTML='';
+    Array.prototype.forEach.call(runsEl.children,function(c){c.classList.remove('cur');});
+    var d=document.createElement('div');
+    d.className='run cur';
+    d.innerHTML='<div class="c">'+cmd+'</div><div class="m">'+hops+' hops · '+ms+' ms</div>';
+    runsEl.insertBefore(d,runsEl.firstChild);
+  }
+
+  function run(cmd){
+    if(running) return;
+    var spec=ROUTES[cmd.trim()];
+    if(!spec){
+      if(runsEl.querySelector('.empty')) runsEl.innerHTML='';
+      var d=document.createElement('div'); d.className='run';
+      d.innerHTML='<div class="c" style="color:#A7AFBA">'+cmd+'</div><div class="m">没有这条走线</div>';
+      runsEl.insertBefore(d,runsEl.firstChild); return;
+    }
+    running=true;
+
+    // 旧的当前走线降级为历史
+    Array.prototype.slice.call(live.childNodes).forEach(function(n){
+      n.setAttribute('class','tr-h'); layer.appendChild(n);
+    });
+
+    var pts=route(spec.ids);
+    var d=dOf(pts), L=lenOf(pts);
+
+    var path=document.createElementNS(NS,'path');
+    path.setAttribute('d',d); path.setAttribute('class','tr');
+    path.style.strokeDasharray=L; path.style.strokeDashoffset=L;
+    live.appendChild(path);
+
+    // 焊盘点亮
+    Object.keys(pads).forEach(function(k){pads[k].setAttribute('class','pad');});
+
+    var tmp=document.createElementNS(NS,'path');
+    tmp.setAttribute('d',d); tmp.setAttribute('fill','none'); tmp.setAttribute('stroke','none');
+    layer.appendChild(tmp);
+
+    var dur=Math.max(700, L*1.35), t0=Date.now(), fired={};
+
+    function frame(){
+      var k=Math.min(1,(Date.now()-t0)/dur);
+      path.style.strokeDashoffset=L*(1-k);
+      var pt=tmp.getPointAtLength(L*k);
+      dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y); dot.style.opacity=1;
+
+      spec.ids.forEach(function(id){
+        var p=N[id];
+        var dd=0, found=false;
+        // 该焊点在折线上的距离
+        for(var i=0;i<pts.length;i++){
+          if(pts[i][0]===p.x && pts[i][1]===p.y){ dd=lenOf(pts.slice(0,i+1)); found=true; break; }
+        }
+        if(found && !fired[id] && L*k>=dd-1){
+          fired[id]=1; pads[id].setAttribute('class','pad on');
+        }
+      });
+
+      if(k<1){ setTimeout(frame,16); }
+      else{
+        tmp.remove(); dot.style.opacity=0; running=false;
+        addRun(cmd, spec.ids.length, spec.ms);
+      }
+    }
+    frame();
+  }
+
+  document.getElementById('f').addEventListener('submit',function(e){
+    e.preventDefault();
+    run(cmdEl.value);
+  });
+
+  setTimeout(function(){ run(cmdEl.value); }, 420);
+})();
+</script>
+</body>
+</html>
