@@ -1,39 +1,79 @@
 ---
 title: Block IP addresses
-weight: 9
-summary: Deny specific sources with a blocklist
+weight: 10
+icon: shield
+translationKey: tutorial-ip-blocklist
+summary: Deny clients with the http.blaklist option
 ---
 
 # Block IP addresses
 
-The IP blocklist denies requests from specific sources — useful to stop malicious crawlers, attack sources or unwanted visitors quickly.
+## 1 Why a blocklist helps
 
-## 1 Add a rule
+A web server blocklist denies requests coming from specific IP addresses:
 
-In "Security → Access blocklist":
+- **Stops malicious traffic**: the list typically holds addresses that launch DDoS attacks, brute force logins or injection attempts;
+- **Protects server resources**: malicious traffic consumes bandwidth, CPU and memory that legit users need;
+- **Improves data safety**: reduces the risk of data leaks and corruption;
+- **Keeps the user experience intact**: avoids slowdowns or outages caused by abusive clients;
+- **Compliance**: blocking sources tied to illegal activity helps meet regulations;
+- **Smaller logs**: fewer useless log lines to analyse and monitor;
+- **Custom access control**: block specific users or networks as needed;
+- **Brand protection**: stopping abusive activity protects your reputation.
 
-1. Click **New rule**;
-2. Enter the IP or subnet to deny, for example:
+A blocklist is not perfect: several users may share one IP and legitimate traffic could be blocked, and the list needs regular updates. It is therefore usually combined with allow lists and firewall rules.
 
-```text
-192.168.1.100
-10.0.0.0/24
+## 2 Configure the blocklist
+
+The blocklist lives in the `blaklist` array under the `http` node (the field name follows the implementation):
+
+```json
+{
+  "log_root": "./logs",
+  "pid": "./fast-https.pid",
+  "http": {
+    "include": "mime.types",
+    "blaklist": [
+      "192.168.11.1-192.168.11.150",
+      "192.168.1.151,59.66.66.66",
+      "192.168.1.151"
+    ],
+    "server": [
+      {
+        "listen": 7000,
+        "server_name": "localhost",
+        "location": [
+          {
+            "url": "/api1",
+            "type": "rewrite",
+            "rewrite": "http://xxxx.com"
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
-3. Choose the scope (global or a single site);
-4. Save — it applies immediately.
-
-## 2 Matching
+`blaklist` enables the IP blocklist and accepts three forms:
 
 | Form | Example | Meaning |
 | --- | --- | --- |
-| Single IP | `1.2.3.4` | Block that address |
-| CIDR | `1.2.3.0/24` | Block the whole subnet |
-| Wildcard | `*.example.com` | Match by host name (optional) |
+| Range | `"192.168.11.1-192.168.11.150"` | Blocks every address in the range |
+| Multiple IPs | `"192.168.1.151,59.66.66.66"` | Comma separated list |
+| Single IP | `"192.168.1.151"` | Blocks that address only |
 
-## 3 Notes
+## 3 Verify a blocked client
 
-- The blocklist wins over the default allow policy;
-- If you block yourself, `127.0.0.1` is always allowed, so you can still open the console and remove the rule.
+Save the configuration, RELOAD, then access the server from a blocked IP. The response is:
 
-Pair it with rate limiting — see [Rate limit a web app](/en/docs/tutorial/rate-limiting/).
+```
+403 BLACK BAN
+```
+
+A `403 BLACK BAN` response means the address is denied.
+
+<div class="admon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+<div>Check your own egress IP before saving, otherwise you may lock yourself out right after the reload.</div>
+</div>

@@ -1,37 +1,60 @@
 ---
 title: Cache a reverse proxy site
-weight: 8
-summary: Keep upstream responses locally to cut origin load
+weight: 9
+icon: zap
+translationKey: tutorial-caching
+summary: Store upstream responses with proxy_cache
 ---
 
 # Cache a reverse proxy site
 
-Enabling cache on a reverse proxy site stores upstream responses locally, so repeated requests hit the cache instead of the origin — lower origin load, faster responses.
+## 1 Why cache a reverse proxy site
 
-## 1 Turn the cache on
+Caching a reverse proxied site improves performance and the user experience, and also strengthens stability and security:
 
-In the reverse proxy site's "Advanced settings → Cache":
+- **Performance**: resources enter the cache on the first request, so later requests are answered from cache with fewer backend round trips;
+- **Less backend load**: cached images, CSS and JavaScript free the application server to handle dynamic requests;
+- **Bandwidth savings**: repeated requests for the same resource are served by the proxy instead of the origin;
+- **Better experience**: faster resource loading means smoother pages and shorter waits;
+- **Stability**: cached and distributed requests mean one overloaded server no longer affects the whole system;
+- **Hot updates**: cache lifetimes can be tuned per status so updated content reaches users quickly;
+- **Security**: long lifetimes for immutable assets reduce direct exposure of the origin.
 
-1. Tick **Enable cache**;
-2. Set the cache folder and its maximum size;
-3. Set the time to live (TTL);
-4. Save and restart the site.
+## 2 Configure proxy caching
 
-## 2 Cache options
+Add `proxy_cache` to the `location` of a reverse proxied site:
+
+```json
+{
+  "listen": 9090,
+  "server_name": "localhost",
+  "location": [
+    {
+      "url": "/",
+      "type": "proxy",
+      "proxy_pass": "http://xxxx.com",
+      "proxy_cache": {
+        "path": "cache",
+        "valid": ["200:1h", "304:1h", "any:30m"],
+        "key": "$request_method$host$request_uri"
+      }
+    }
+  ]
+}
+```
+
+`proxy_cache` enables the proxy cache:
 
 | Option | Description |
 | --- | --- |
-| Cache folder | Local path that stores cached responses |
-| Max size | Evicts old entries with LRU once exceeded |
-| TTL | Longest time a resource stays cached |
-| Ignore query | Whether the full query string is part of the cache key |
+| `path` | Directory that stores cached files |
+| `valid` | Cache lifetime per response status, written as `status:duration` |
+| `key` | Rule that builds the cache file name from variables |
 
-## 3 When it helps
+The example caches the upstream `xxxx.com`: `path` is the cache location, `valid` lists the lifetime for each status (status 200 is cached for one hour, `any` falls back to 30 minutes) and `key` builds the cache file name.
 
-- Sites with plenty of static assets (images, scripts, styles);
-- An origin that is weak and needs to absorb traffic spikes.
+## 3 Recommendations
 
-<div class="admon">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
-<div>For APIs whose content changes often, disable the cache or keep the TTL short to avoid stale responses.</div>
-</div>
+- Sites with many static assets benefit the most;
+- For fast-changing APIs, shorten the lifetime of the matching status codes or exclude them from caching;
+- RELOAD after changing `proxy_cache`.

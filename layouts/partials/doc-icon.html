@@ -7,5 +7,18 @@
   "docker" `<rect x="3" y="9" width="18" height="10" rx="2"/><path d="M7.5 9V5.5H12V9M13.5 9V5.5H18V9"/>`
   "source" `<path d="M9.5 8l-4 4 4 4M14.5 8l4 4-4 4"/>`
   "doc" `<path d="M6.5 3.5h7L18 8v12.5H6.5z"/><path d="M13.5 3.5V8H18"/>`
+  "settings" `<circle cx="12" cy="12" r="3"/><path d="M12 3.2v2.3M12 18.5v2.3M4.4 7.8l2 1.1M17.6 15.1l2 1.1M4.4 16.2l2-1.1M17.6 8.9l2-1.1"/>`
+  "folder" `<path d="M3.5 6.5h5.2l1.8 2.2h10v9.8h-17z"/>`
+  "app" `<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 8.5h17"/><circle cx="6.6" cy="6.5" r=".7"/>`
+  "swap" `<path d="M4.5 9h12.5l-3-3M19.5 15H7l3 3"/>`
+  "plug" `<path d="M9.5 3.5v4M14.5 3.5v4"/><path d="M7 7.5h10v3.2a5 5 0 01-10 0z"/><path d="M12 15.7v4.8"/>`
+  "layers" `<path d="M12 3.5l8.5 4.5-8.5 4.5L3.5 8z"/><path d="M3.5 12.6l8.5 4.5 8.5-4.5"/>`
+  "redirect" `<path d="M4.5 6.5h7.5a4.5 4.5 0 014.5 4.5v6"/><path d="M13 14l3.5 3.5L20 14"/>`
+  "lock" `<rect x="4.5" y="10.5" width="15" height="9.5" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5"/>`
+  "zap" `<path d="M13.2 3L6 13.2h4.8L10 21l7.2-10.2H12.4z"/>`
+  "shield" `<path d="M12 3.5l7.5 3v6.4c0 4-3.1 6.8-7.5 8-4.4-1.2-7.5-4-7.5-8V6.5z"/><path d="M9.6 9.6l4.8 4.8M14.4 9.6l-4.8 4.8"/>`
+  "sliders" `<path d="M4 8.5h8.5M17.5 8.5H20M4 15.5h2.5M11.5 15.5H20"/><circle cx="15.2" cy="8.5" r="2.3"/><circle cx="9.2" cy="15.5" r="2.3"/>`
+  "gauge" `<path d="M4.3 16.6a8.2 8.2 0 1115.4 0"/><path d="M12 16.6l3.9-4.9"/>`
+  "book" `<path d="M4.5 5.6c2.9-1 5.2-1 7.5.9 2.3-1.9 4.6-1.9 7.5-.9v12.8c-2.9-1-5.2-1-7.5.9-2.3-1.9-4.6-1.9-7.5-.9z"/><path d="M12 6.5v12.8"/>`
 -}}
 <svg viewBox="0 0 24 24" aria-hidden="true">{{ index $icons $name | default (index $icons "doc") | safeHTML }}</svg>

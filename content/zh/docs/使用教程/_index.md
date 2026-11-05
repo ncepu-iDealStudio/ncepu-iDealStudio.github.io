@@ -7,4 +7,4 @@ weight: 3
 
 从基本配置开始，逐步完成静态站点发布、反向代理、HTTPS、缓存与访问控制等常见配置。
 
-{{< doc-children >}}
+{{< doc-cards >}}

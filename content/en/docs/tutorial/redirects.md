@@ -1,32 +1,99 @@
 ---
 title: Configure redirects
-weight: 6
-summary: Send requests from one address to another
+weight: 7
+icon: redirect
+translationKey: tutorial-redirects
+summary: Redirect requests with the rewrite location type
 ---
 
 # Configure redirects
 
-Redirects move a request from one address to another — HTTP to HTTPS, an old domain to a new one, or a retired page to the home page.
+## 1 What a redirect is
 
-## 1 Common redirect types
+A redirect is a server response technique that sends a user from one page or domain to another. It can be implemented on the server or the client, and the action is indicated mainly by an HTTP status code. A 301 redirect, for instance, is a permanent redirect meaning the resource of the old address has moved permanently to the new one.
 
-| Type | Example | Use case |
-| --- | --- | --- |
-| HTTP → HTTPS | `http://a.com` → `https://a.com` | Force encrypted access |
-| Domain move | `old.com` → `new.com` | Domain migration |
-| Path move | `/temp` → `/` | Retire a temporary page |
+Common scenarios:
 
-## 2 Steps
+- **Domain change**: when a site moves to a new domain, a 301 redirect sends visitors of the old domain to the new one while keeping search rankings and link equity;
+- **Site structure optimisation**: after a redesign, old URLs redirect to the new structured pages;
+- **Page migration**: a page moved elsewhere redirects visitors from the old address;
+- **Handling error pages**: users are redirected from an error page to the correct one;
+- **Multi-version sites**: the www and non-www versions use a 301 to declare the preferred domain and avoid split equity;
+- **SEO strategy**: a 301 transfers page equity and avoids losses caused by URL changes.
 
-1. Open the site's "Advanced settings → Redirect rules";
-2. Choose the redirect type, then fill in source and target;
-3. Pick the status code (301 permanent / 302 temporary);
-4. Save and restart the site.
+## 2 Why redirects help
 
-## 3 Recommendations
+- **Consolidate equity**: equity from the old address moves to the new one, improving its ranking;
+- **Better experience**: users no longer hit error pages after a URL change or page move;
+- **Keep existing links**: inbound links stay valid instead of breaking;
+- **Avoid duplicate content**: search engines index only one version;
+- **Simpler management**: a sound redirect policy simplifies maintenance of large sites.
 
-- Use **301** for permanent, production redirects;
-- Use **302** for campaign pages and temporary maintenance;
-- Turning on "HTTP to HTTPS" upgrades every plain request automatically.
+## 3 Redirect configuration
 
-Pair redirects with encryption — see [Serve a site over HTTPS](/en/docs/tutorial/https-access/).
+Set `type` to `rewrite` in the `location` and give the target address in `rewrite`:
+
+```json
+{
+  "listen": 7000,
+  "server_name": "localhost",
+  "location": [
+    {
+      "url": "/api1",
+      "type": "rewrite",
+      "rewrite": "http://xxxx.com"
+    }
+  ]
+}
+```
+
+| Option | Description |
+| --- | --- |
+| `listen` | Port the server listens on |
+| `server_name` | Domain configured for this site |
+| `url` | Regular expression the request path must match |
+| `type` | `rewrite` enables redirecting |
+| `rewrite` | Target address of the redirect |
+
+## 4 Example: HTTP to HTTPS
+
+```json
+{
+  "http": {
+    "server": [
+      {
+        "listen": 80,
+        "server_name": "xxxx.com",
+        "location": [
+          {
+            "url": "/",
+            "type": "rewrite",
+            "rewrite": "https://xxxx.com"
+          }
+        ]
+      },
+      {
+        "listen": "443 ssl",
+        "server_name": "xxxx.com",
+        "ssl_certificate": "config/cert/localhost.pem",
+        "ssl_certificate_key": "config/cert/localhost-key.pem",
+        "location": [
+          {
+            "url": "/",
+            "type": "local",
+            "root": "./httpdoc/root",
+            "index": ["index.html", "index.htm"]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Notes:
+
+- The first `server` block listens on port 80 and rewrites every request to `https://xxxx.com`, so `http://xxxx.com` automatically moves to the encrypted address;
+- The second block listens on `443 ssl` and is the actual configuration of the HTTPS site;
+- `ssl_certificate` and `ssl_certificate_key` point at the certificate and key files;
+- `root` and `index` define the static directory and its default documents.

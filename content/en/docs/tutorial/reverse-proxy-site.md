@@ -1,45 +1,103 @@
 ---
 title: Reverse proxy a site
 weight: 4
-summary: Forward a public domain to a local service
+icon: swap
+translationKey: tutorial-reverse-proxy
+summary: Forward a public domain to an upstream service with proxy_pass
 ---
 
 # Reverse proxy a site
 
-A reverse proxy sits between the client and the origin: clients hit your domain, Fast-Https forwards the request to a local service and returns the response, so the origin address stays private.
+Like Nginx, Fast-Https can reverse proxy server-side applications (PHP, Python, Java APIs or services) and works well as the front-end web server for a web application.
 
-![Reverse proxy overview](/assets/images/docs/tutorial/4.1.png)
+![Reverse proxy architecture](/assets/images/docs/tutorial/4.1.png)
 
-## Configure the proxy on Windows
+## Configure a reverse proxy on Windows
 
 ### 1 Start the upstream service
 
-Start the service you want to expose locally (for example `http://127.0.0.1:3000`) and confirm it answers on this machine.
+Start the application you want to proxy. Suppose you are deploying a Python Flask service — **first make sure it runs correctly on this machine**.
 
-### 2 Edit the configuration
+### 2 Edit the configuration file
 
-Edit the configuration file in the Fast-Https `config` folder, set the `location` `type` to `proxy` and point `root` at the upstream:
+Open `fast-https.json` in the `config` folder and configure the site:
 
-![Edit the configuration](/assets/images/docs/tutorial/4.2.png)
+![The configuration file in the config folder](/assets/images/docs/tutorial/4.2.png)
+
+#### 2.1 Minimal reverse proxy configuration
 
 ```json
 {
-  "listen": 8080,
-  "server_name": "localhost",
-  "location": [
-    { "url": "/", "type": "proxy", "root": "http://127.0.0.1:3000" }
-  ]
+  "log_root": "./logs",
+  "pid": "./fast-https.pid",
+  "http": {
+    "include": "mime.types",
+    "server": [
+      {
+        "listen": 80,
+        "server_name": "api.abc.com",
+        "location": [
+          {
+            "url": "/",
+            "type": "proxy",
+            "proxy_pass": "http://127.0.0.1:5000",
+            "proxy_set_header": [
+              {
+                "HeaderKey": "Host",
+                "HeaderValue": "$host"
+              },
+              {
+                "HeaderKey": "Connection",
+                "HeaderValue": "close"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
-Save, restart Fast-Https, then open the domain — the local service is now served.
-
-## What the options mean
-
 | Option | Description |
 | --- | --- |
-| Upstream | `http://host:port` of the local service |
-| Path prefix | Optional, proxies only a path such as `/api` |
-| Timeout | Threshold for dropping an unresponsive upstream |
+| `listen` | Port the server listens on |
+| `server_name` | Domain configured for this site |
+| `url` | Request path that must be matched, or a regular expression; usually just `/` |
+| `type` | `proxy` enables reverse proxying |
+| `proxy_pass` | Upstream address and port to proxy to — a Python API, a PHP endpoint or a Java service; here a local Flask service |
+| `proxy_set_header` | Replaces request headers while proxying; `HeaderKey` is the name, `HeaderValue` the value |
 
-For long-lived connections (chat, push), read [Reverse proxy a WebSocket service](/en/docs/tutorial/reverse-proxy-websocket/).
+#### 2.2 About `proxy_set_header`
+
+Values starting with `$` are built-in variables replaced with real values; anything else is used literally. If the header did not exist, it is added.
+
+1. `$host` — replaced with the `server_name` of the site in the configuration;
+2. `$proxy_host` — replaced with the host name given in `proxy_pass`.
+
+A common header configuration:
+
+```
+"proxy_set_header" : [
+              {
+                "HeaderKey": "Host",
+                "HeaderValue": "$proxy_host"
+              },
+              {
+                "HeaderKey": "Connection",
+                "HeaderValue": "close"
+              }
+]
+```
+
+Which one to use depends on how the upstream validates the `Host` header.
+
+### 3 WebSocket upstreams
+
+1. If the upstream server exposes WebSocket endpoints, **no** extra option is needed in `proxy_pass`;
+2. After configuring, `ws://api.quwancode.com/XXXX` reaches the matching WebSocket endpoint on the upstream server.
+
+<div class="admon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+<div>To speed up a reverse proxied site, add <code>proxy_cache</code> to the <code>location</code> — see "Cache a reverse proxy site".</div>
+</div>
