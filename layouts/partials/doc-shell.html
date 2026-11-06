@@ -1,4 +1,14 @@
 {{ $cur := . }}
+{{ $content := .Content }}
+{{ $updated := .Lastmod }}
+{{ with .GitInfo }}
+  {{ if .AuthorDate.After $updated }}
+    {{ $updated = .AuthorDate }}
+  {{ end }}
+{{ end }}
+{{/* Allow an extra minute per four code blocks or illustrations, rounded up. */}}
+{{ $examples := len (findRE `<(?:pre|img)\b` $content) }}
+{{ $minutes := add .ReadingTime (int (math.Ceil (div (float $examples) 4.0))) }}
 <div class="shell">
   <aside class="side">
     {{ $docs := site.GetPage "/docs" }}
@@ -26,14 +36,18 @@
   <main class="doccol" id="doccol">
     <div class="dochead">
       <span>{{ i18n "docsCrumb" }}</span><span>/</span><b>{{ .Title }}</b>
-      <div class="sp"><span>{{ i18n "updatedAt" }}</span><span>{{ i18n "readingTime" }}</span></div>
+      <div class="sp">
+        {{ if not $updated.IsZero }}<span>{{ i18n "updatedAt" (dict "date" ($updated.Format "2006-01-02")) }}</span>{{ end }}
+        {{ if gt $minutes 0 }}<span>{{ i18n "readingTime" (dict "minutes" $minutes) }}</span>{{ end }}
+      </div>
     </div>
     <div class="paper">
-      <article class="doc">{{ .Content }}</article>
+      <article class="doc">{{ $content }}</article>
     </div>
     <nav class="pager">
-      {{ with .PrevInSection }}<a href="{{ .RelPermalink }}"><span class="lbl">{{ i18n "prevPage" }}</span><span class="tt">{{ .Title }}</span></a>{{ end }}
-      {{ with .NextInSection }}<a class="next" href="{{ .RelPermalink }}"><span class="lbl">{{ i18n "nextPage" }}</span><span class="tt">{{ .Title }}</span></a>{{ end }}
+      {{/* NextInSection returns the preceding page in the sidebar order. */}}
+      {{ with .NextInSection }}<a href="{{ .RelPermalink }}"><span class="lbl">{{ i18n "prevPage" }}</span><span class="tt">{{ .Title }}</span></a>{{ end }}
+      {{ with .PrevInSection }}<a class="next" href="{{ .RelPermalink }}"><span class="lbl">{{ i18n "nextPage" }}</span><span class="tt">{{ .Title }}</span></a>{{ end }}
     </nav>
   </main>
 

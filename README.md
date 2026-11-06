@@ -61,6 +61,9 @@ hugo version
 git clone https://github.com/ncepu-iDealStudio/ncepu-iDealStudio.github.io.git
 cd ncepu-iDealStudio.github.io
 
+# 让 Hugo 从 Git 历史读取中文文档的更新日期。每个克隆执行一次。
+git config --local core.quotePath false
+
 # 启动本地服务（含草稿，如 2025/2026 时间线占位）
 hugo server -D
 

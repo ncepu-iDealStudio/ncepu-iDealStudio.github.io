@@ -8,8 +8,8 @@ toggleGroup: "展开或收起 {{ .name }}"
 
 # 文档外壳
 docsCrumb: "docs"
-updatedAt: "更新于 2026-10"
-readingTime: "阅读约 6 分钟"
+updatedAt: "更新于 {{ .date }}"
+readingTime: "阅读约 {{ .minutes }} 分钟"
 tocTitle: "本页总览"
 tlsBadge: "已加密 · TLS 1.3"
 prevPage: "上一页"

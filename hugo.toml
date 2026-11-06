@@ -3,10 +3,14 @@ locale = 'zh-cn'
 title = 'Fast-Https 文档'
 summaryLength = 24
 disableKinds = ["taxonomy"]
+enableGitInfo = true
 
 # 默认语言中文，直接挂在根路径；英文在 /en/ 下
 defaultContentLanguage = 'zh'
 defaultContentLanguageInSubdir = false
+
+[frontmatter]
+  lastmod = ['lastmod', ':git', 'date', 'publishDate']
 
 [outputs]
   home = ["HTML", "SEARCH"]
@@ -34,6 +38,7 @@ defaultContentLanguageInSubdir = false
     label = '中文'
     locale = 'zh-CN'
     contentDir = 'content/zh'
+    hasCJKLanguage = true
     weight = 1
     title = 'Fast-Https 文档'
     [languages.zh.params]

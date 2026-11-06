@@ -4,38 +4,47 @@ weight: 7
 icon: redirect
 translationKey: tutorial-redirects
 summary: Use rewrite to redirect requests, including HTTP to HTTPS
+lastmod: 2026-11-06
 ---
 
 # Configure redirects
 
+Use Fast-Https v1.5.0 to configure two redirects. First send `/api1` to the home page on the same site. Then redirect HTTP requests to HTTPS.
+
 ## 1 What a redirect is
 
-A redirect is a server response technique that sends a user from one page or domain to another. It can be implemented on the server or the client, and the action is indicated mainly by an HTTP status code. A 301 redirect, for instance, is a permanent redirect meaning the resource of the old address has moved permanently to the new one.
+A redirect sends the browser from one URL to another. The server can tell the browser where to go in an HTTP response, and a page can also trigger a redirect in the browser using a script. This tutorial uses a server-side `301 Moved Permanently` response. The status code indicates a permanent move. The browser makes a new request to the URL in the `Location` response header.
 
-Common scenarios:
+Use redirects in situations like these.
 
-- **Domain change**: when a site moves to a new domain, a 301 redirect sends visitors of the old domain to the new one while keeping search rankings and link equity;
-- **Site structure optimisation**: after a redesign, old URLs redirect to the new structured pages;
-- **Page migration**: a page moved elsewhere redirects visitors from the old address;
-- **Handling error pages**: users are redirected from an error page to the correct one;
-- **Multi-version sites**: the www and non-www versions use a 301 to declare the preferred domain and avoid split equity;
-- **SEO strategy**: a 301 transfers page equity and avoids losses caused by URL changes.
+- **Change domains.** When a site moves to a new domain, redirect each page on the old domain to its counterpart on the new domain.
+- **Reorganise a site.** After a redesign, map old URLs to their new sections or pages. For example, redirect `/help/install` to `/docs/install`.
+- **Move a single page.** If an article or product page moves to a new address, a redirect lets people using the old address find it.
+- **Handle broken links.** If a retired page has a suitable replacement, redirect visitors who follow the old link to that page.
+- **Unify site entry points.** When the `www` and non-`www` domains serve the same content, pick a preferred domain and redirect the other one to it.
+- **Support search engine optimisation (SEO).** Map old URLs to new ones before a migration, then use `301` redirects for permanent moves to help search engines identify the new addresses.
 
 ## 2 Why redirects help
 
-- **Consolidate equity**: equity from the old address moves to the new one, improving its ranking;
-- **Better experience**: users no longer hit error pages after a URL change or page move;
-- **Keep existing links**: inbound links stay valid instead of breaking;
-- **Avoid duplicate content**: search engines index only one version;
-- **Simpler management**: a sound redirect policy simplifies maintenance of large sites.
+- **Consolidate search signals.** Search engines can use permanent redirects to identify the preferred URL and consolidate signals such as links to the old URL.
+- **Help visitors find the right page.** After a URL changes, browsers can take visitors directly to the replacement so they can find the same content.
+- **Keep existing references useful.** As long as the old URL still redirects, bookmarks, links from other sites, and shared URLs can still reach the content.
+- **Choose a preferred URL for duplicate pages.** When several URLs serve the same content, redirect addresses you plan to retire to the URL you want to keep. This helps search engines identify the preferred URL.
+- **Simplify maintenance.** Keep the content on one page and use the old URLs as redirects. Future edits go to a single page.
+
+See the Google Search documentation on [redirects](https://developers.google.com/search/docs/crawling-indexing/301-redirects) and [choosing a preferred URL](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls).
 
 ## 3 Redirect configuration
 
-This example was tested with Fast-Https v1.4.0 on Linux x86_64. Extract the release archive into a separate test directory and check that it contains `fast-https` and `httpdoc/root/index.html`. This example uses port `7000`, which must be available. [v1.4.0 release](https://github.com/ncepu-iDealStudio/Fast-Https/releases/tag/v1.4.0)
+The Linux commands use Ubuntu as an example. Download `fast-https_Linux_x86_64.tar.gz` and extract it into a new test directory. Check that the directory contains `fast-https`, `config/fast-https.json`, and `httpdoc/root/index.html`. Make sure port `7000` is available. [Fast-Https v1.5.0 release](https://github.com/ncepu-iDealStudio/Fast-Https/releases/tag/v1.5.0)
+
+On Windows, open your WSL Ubuntu workspace in VS Code. Download the same Linux release archive and run the tutorial commands in the integrated terminal. Use the same WSL distribution in the terminal running the server and the terminal running `curl`. [Use WSL in VS Code](https://code.visualstudio.com/docs/remote/wsl)
+
+The native Windows release uses the same JSON configuration. Run `monitor.exe` from the extracted directory and use **Start** and **Stop** in the tray menu. In PowerShell, use `curl.exe` to inspect HTTP responses.
 
 ### 3.1 Configure the test site
 
-Open `config/fast-https.json` in the test directory and save the following configuration.
+Open `config/fast-https.json` in the test directory with a text editor. Replace the entire file with this JSON and save it.
 
 ```json
 {
@@ -63,23 +72,25 @@ Open `config/fast-https.json` in the test directory and save the following confi
 }
 ```
 
-The first `location` matches `/api1`, returns `301`, and sets the `Location` response header to the URL in `rewrite`. The second serves `index.html` from `./httpdoc/root`.
+| Field | Purpose |
+| --- | --- |
+| `listen` | Port on which the service listens, `7000` in this example. |
+| `server_name` | Hostname configured for the site, `localhost` in this example. |
+| `url` | Request path matching rule. It supports regular expressions. This example matches `/api1`. |
+| `type` | Set to `rewrite` to return a `301` redirect. |
+| `rewrite` | Fixed destination written to the `Location` response header. It can be a full URL on this site or another domain. |
+
+The first `location` redirects `/api1` to `http://127.0.0.1:7000/index.html`. The second serves `index.html` from `./httpdoc/root`.
 
 ### 3.2 Start and verify
 
-From the test directory, check the configuration.
+From the test directory, start Fast-Https in the foreground. The `start` command validates the configuration before listening on any ports.
 
 ```bash
-./fast-https check
+FASTHTTPS_FOREGROUND=1 ./fast-https start
 ```
 
-When you see `config ok`, start Fast-Https.
-
-```bash
-./fast-https start
-```
-
-Once the server is running, open another terminal and request `/api1` to see the initial response.
+When you see `Listen 0.0.0.0:7000`, leave Fast-Https running. Open a second terminal and request `/api1` to see the initial response.
 
 ```bash
 curl --noproxy '*' -siS http://127.0.0.1:7000/api1
@@ -91,12 +102,14 @@ The response includes `301` and the redirect URL.
 HTTP/1.1 301 Moved Permanently
 Connection: close
 Location: http://127.0.0.1:7000/index.html
+X-Content-Type-Options: nosniff
 ```
 
-Use `-L` to follow the redirect and see the final status code and URL.
+Use `-L` to follow the redirect and see the final status code and URL. The block below contains one command.
 
 ```bash
-curl --noproxy '*' -sSL -o /dev/null -w '%{http_code} %{url_effective}\n' http://127.0.0.1:7000/api1
+curl --noproxy '*' -sSL -o /dev/null \
+  -w '%{http_code} %{url_effective}\n' http://127.0.0.1:7000/api1
 ```
 
 The final response is `200` at the redirect URL.
@@ -105,21 +118,21 @@ The final response is `200` at the redirect URL.
 200 http://127.0.0.1:7000/index.html
 ```
 
-![Terminal output showing /api1 returning 301 with Location and the destination returning 200](/assets/images/docs/tutorial/7.1.png)
+![Both curl commands and their output showing the initial 301 with Location and the final 200](/assets/images/docs/tutorial/7.1.png)
 
-When you finish, use an available terminal to stop the server from the test directory.
+When you finish, use the terminal where you ran `curl` to stop Fast-Https from the test directory.
 
 ```bash
 ./fast-https stop
 ```
 
-## 4 Example: HTTP to HTTPS
+## 4 Redirect HTTP to HTTPS {#4-example-http-to-https}
 
-Extract the same Fast-Https v1.4.0 release archive into a new empty directory. This example receives HTTP requests on port `17080` and serves the home page over HTTPS on port `17443`.
+Extract the same Fast-Https v1.5.0 release archive into a new empty directory. This example receives HTTP requests on port `17080` and serves the home page over HTTPS on port `17443`.
 
 ### 4.1 Configure the HTTP and HTTPS sites
 
-Replace `config/fast-https.json` in the new directory with the following configuration.
+Replace the entire `config/fast-https.json` file in the new directory with the following configuration.
 
 ```json
 {
@@ -155,11 +168,11 @@ Replace `config/fast-https.json` in the new directory with the following configu
 }
 ```
 
-The first `server` uses `rewrite` to redirect requests to a fixed HTTPS URL. The second loads the certificate and private key and serves `./httpdoc/root/index.html` over HTTPS.
+The first `server` redirects HTTP requests to the fixed URL `https://localhost:17443/`. The second enables TLS on port `17443`. The `ssl_certificate` and `ssl_certificate_key` fields point to the site certificate and private key. The `root` and `index` fields specify the HTTPS site's file directory and home page filename.
 
 ### 4.2 Start the server and verify the redirect
 
-Start Fast-Https from the new test directory. On first start, it generates the `localhost` certificate and private key, along with `httpdoc/root/root.crt` for verification. Running `./fast-https check` before the first start reports that the certificate file is missing.
+Start Fast-Https from the new test directory. The first start generates the `localhost` site certificate, its private key, and the local root certificate `httpdoc/root/root.crt` for verification.
 
 ```bash
 FASTHTTPS_FOREGROUND=1 ./fast-https start
@@ -175,13 +188,15 @@ curl --noproxy '*' -siS http://localhost:17080/
 HTTP/1.1 301 Moved Permanently
 Connection: close
 Location: https://localhost:17443/
+X-Content-Type-Options: nosniff
 ```
 
-Use `-L` to follow the redirect and `--cacert` to use the CA certificate generated in the test directory. The two lines below form one command.
+Use `-L` to follow the redirect and `--cacert` to use the CA certificate generated in the test directory. The block below contains one command.
 
 ```bash
 curl --noproxy '*' --cacert httpdoc/root/root.crt \
-  -sSL -o /dev/null -w '%{http_code} %{url_effective}\n' http://localhost:17080/
+  -sSL -o /dev/null -w '%{http_code} %{url_effective}\n' \
+  http://localhost:17080/
 ```
 
 After certificate verification succeeds, the final HTTPS page returns `200`.
@@ -190,7 +205,7 @@ After certificate verification succeeds, the final HTTPS page returns `200`.
 200 https://localhost:17443/
 ```
 
-![Terminal output showing the HTTP 301 and Location header, followed by HTTPS 200](/assets/images/docs/tutorial/7.2.png)
+![Both curl commands and their output showing the HTTP 301 with an HTTPS destination and the final 200](/assets/images/docs/tutorial/7.2.png)
 
 Stop the test server from the terminal used for verification.
 
