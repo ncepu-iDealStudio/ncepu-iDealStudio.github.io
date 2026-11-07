@@ -1,23 +1,45 @@
 ---
 title: Run as a service
-weight: 2
-summary: Install as a system service with start on boot
+weight: 10
+translationKey: install-linux-service
+summary: Manage Fast-Https startup, service status and logs with systemd
 ---
 
 # Run as a service
 
-Fast-Https can also be installed as a system service, supervised by the OS instead of manually running `nohup`:
+The Fast-Https v1.6.0 server `.deb` package installs `fast-https.service`. For download and installation instructions, see [Install on Ubuntu](../ubuntu/).
+
+## Start now or on boot
+
+Start the service immediately.
 
 ```bash
-# install the service
-$ sudo ./fast-https install
+sudo systemctl start fast-https.service
+```
 
-# enable start on boot
-$ systemctl enable fast-https.service
+Start the service now and enable it at boot.
 
-# start the service
-$ sudo systemctl start fast-https.service
+```bash
+sudo systemctl enable --now fast-https.service
+```
 
-# remove the service
-$ sudo ./fast-https uninstall
+## Restart or stop
+
+Restart the service after changing its configuration.
+
+```bash
+sudo systemctl restart fast-https.service
+```
+
+To stop the service and disable startup at boot, run the following command.
+
+```bash
+sudo systemctl disable --now fast-https.service
+```
+
+## Check status and logs
+
+```bash
+systemctl status fast-https.service --no-pager
+sudo journalctl -u fast-https.service -n 30 --no-pager
 ```

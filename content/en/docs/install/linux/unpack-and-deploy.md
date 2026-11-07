@@ -1,12 +1,13 @@
 ---
-title: Unpack and deploy
-weight: 1
-summary: Download, unpack and start on CentOS 7.9
+title: CentOS 7.9 archive deployment (v1.0)
+weight: 20
+translationKey: install-linux-centos-archive
+summary: Start and verify the default site from the .tar.gz archive
 ---
 
-# Unpack and deploy
+# CentOS 7.9 archive deployment (v1.0)
 
-Fast-Https runs on mainstream Linux distributions. The steps below use CentOS 7.9 as an example.
+This example unpacks and deploys the Fast-Https v1.0 `.tar.gz` archive on CentOS 7.9. For the server `.deb` package, see [Install on Ubuntu](../ubuntu/).
 
 ```bash
 # create a working folder

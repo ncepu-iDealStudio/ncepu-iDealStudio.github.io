@@ -31,7 +31,7 @@ Fast-Https is published as a release package and can also be built from source. 
   </a>
 </div>
 
-On Windows download `fast-https_Windows_x86_64.zip`; on Linux pick the build that matches your architecture, x86 servers use `fast-https_Linux_x86_64.tar.gz`.
+On Windows download `fast-https_Windows_x86_64.zip`. To choose a Linux package for your distribution and architecture, see [Linux installation](linux/).
 
 ## 2 Platform guides
 

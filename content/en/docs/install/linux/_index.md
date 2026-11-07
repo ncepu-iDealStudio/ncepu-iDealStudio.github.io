@@ -2,12 +2,13 @@
 title: Linux
 weight: 3
 icon: linux
-summary: Unpack and deploy, or install as a service
+translationKey: install-linux
+summary: Choose an installation method for your Linux distribution
 ---
 
 # Linux
 
-On Linux, Fast-Https runs as a long-lived service and is a good fit for servers that expose HTTPS to the internet. It can be supervised by systemd or simply run in the background.
+Choose the Fast-Https package for your Linux distribution and processor architecture. The Ubuntu guide covers `.deb` installation, startup with systemd and verification of the default site.
 
 ## Installation options
 
