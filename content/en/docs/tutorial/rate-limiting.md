@@ -103,4 +103,4 @@ Stop the test service when you finish.
 
 With `limit: 1` and `burst: 2`, an IP can initially open two connections in quick succession and regains one unit per second. For your service, base the values on normal connection rates and the bursts you want to allow. Adjust the request body and header limits independently. Save and reload the configuration.
 
-The rate limiter allows access again as the allowance refills. To keep selected addresses blocked, use the [IP blocklist](/en/docs/tutorial/ip-blocklist/).
+The rate limiter allows access again as the allowance refills. To keep selected addresses blocked, use the [IP blocklist](/docs/tutorial/ip-blocklist/).

@@ -31,7 +31,7 @@ Save the file. Fast-Https reads the saved configuration the next time it starts.
 
 ## 2 Make a request and read the log
 
-Request a running site. The command uses the local HTTP address from [Serve a site over HTTPS](/en/docs/tutorial/https-access/). Substitute your site's address if you are using a different site.
+Request a running site. The command uses the local HTTP address from [Serve a site over HTTPS](/docs/tutorial/https-access/). Substitute your site's address if you are using a different site.
 
 ```bash
 curl --noproxy '*' -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:18080/

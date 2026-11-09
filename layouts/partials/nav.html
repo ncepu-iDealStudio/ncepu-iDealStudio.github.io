@@ -14,6 +14,8 @@
       {{ range site.Menus.main }}
         {{ $u := .URL }}
         {{ with .Page }}{{ $u = .RelPermalink }}{{ end }}
+        {{/* 社区链接统一取自语言参数，填入飞书群邀请链接后导航自动生效 */}}
+        {{ if eq .Identifier "community" }}{{ with site.Params.linkCommunity }}{{ $u = . }}{{ end }}{{ end }}
         <a href="{{ $u }}" class="{{ if $cur.IsMenuCurrent "main" . }}active{{ end }}">{{ .Name }}</a>
       {{ end }}
     </nav>

@@ -1,0 +1,143 @@
+{{ define "main" }}
+
+<section class="rel-head">
+  <div class="wrap">
+    <div class="k">{{ i18n "relKicker" }}</div>
+    <h1>{{ i18n "relTitle" }}</h1>
+    <p>{{ i18n "relLede" }}</p>
+  </div>
+</section>
+
+<!-- 当前版本 + 工件清单：优先读 GitHub Releases 的实时数据，取不到时回退到静态清单 -->
+<section class="rel-current" id="relCurrent"
+  data-repo="ncepu-iDealStudio/Fast-Https"
+  data-t-live="{{ i18n "relAssetsLive" }}"
+  data-t-fallback="{{ i18n "relAssetsFallback" }}"
+  data-t-failed="{{ i18n "relVersionPending" }}"
+  data-t-noassets="{{ i18n "relNoAssets" }}"
+  data-t-size="{{ i18n "relSize" }}"
+  data-t-downloads="{{ i18n "relDownloads" }}"
+  data-t-get="{{ i18n "relGet" }}">
+  <div class="wrap rel-current-in">
+    <div class="rel-ver">
+      <span class="lbl">{{ i18n "relCurrent" }}</span>
+      <b id="relVersion">{{ i18n "relVersionPending" }}</b>
+      <span class="date" id="relDate">{{ i18n "relDatePending" }}</span>
+      <div class="rel-ver-links">
+        <a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "relAll" }}</a>
+        <a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "relChangelog" }}</a>
+        <a href="{{ site.Params.releasesGitee }}" target="_blank" rel="noopener">Gitee</a>
+      </div>
+    </div>
+    <div class="rel-assets">
+      <div class="rel-assets-h">{{ i18n "relAssets" }} <span id="relSource">{{ i18n "relAssetsFallback" }}</span></div>
+      <div id="relAssetList">
+        <div class="rel-asset"><code>fast-https-&lt;version&gt;-windows-amd64-setup.exe</code><span>Windows · x64 · desktop client</span><a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "relGet" }}</a></div>
+        <div class="rel-asset"><code>fast-https-&lt;version&gt;-windows-arm64-setup.exe</code><span>Windows · ARM64 · desktop client</span><a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "relGet" }}</a></div>
+        <div class="rel-asset"><code>fast-https_Windows_x86_64.zip</code><span>Windows · x64 · portable, no GUI</span><a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "relGet" }}</a></div>
+        <div class="rel-asset"><code>fast-https_Linux_x86_64.tar.gz</code><span>Linux · x86_64 · service</span><a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "relGet" }}</a></div>
+      </div>
+      <p class="rel-assets-hint">{{ i18n "relAssetsHint" }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="rel-sec" id="choose">
+  <div class="wrap">
+    <h2>{{ i18n "relChooseTitle" }}</h2>
+    <p class="lede">{{ i18n "relChooseLede" }}</p>
+    <div class="rel-table-wrap">
+      <table class="rel-table">
+        <thead><tr><th>{{ i18n "relColForm" }}</th><th>{{ i18n "relColFor" }}</th><th>{{ i18n "relColHas" }}</th><th>{{ i18n "relColNote" }}</th><th></th></tr></thead>
+        <tbody>
+          <tr><th scope="row">{{ i18n "relWin1Name" }}</th><td>{{ i18n "relWin1For" }}</td><td>{{ i18n "relWin1Has" }}</td><td>{{ i18n "relWin1Note" }}</td><td><a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "relGet" }}</a></td></tr>
+          <tr><th scope="row">{{ i18n "relWin2Name" }}</th><td>{{ i18n "relWin2For" }}</td><td>{{ i18n "relWin2Has" }}</td><td>{{ i18n "relWin2Note" }}</td><td><a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "relGet" }}</a></td></tr>
+          <tr><th scope="row">{{ i18n "relLinuxName" }}</th><td>{{ i18n "relLinuxFor" }}</td><td>{{ i18n "relLinuxHas" }}</td><td>{{ i18n "relLinuxNote" }}</td><td><a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "relGet" }}</a></td></tr>
+          <tr><th scope="row">{{ i18n "relDockerName" }}</th><td>{{ i18n "relDockerFor" }}</td><td>{{ i18n "relDockerHas" }}</td><td>{{ i18n "relDockerNote" }}</td><td><a href="{{ site.Params.linkDocker | relLangURL }}">{{ i18n "relGuide" }}</a></td></tr>
+          <tr><th scope="row">{{ i18n "relSourceName" }}</th><td>{{ i18n "relSourceFor" }}</td><td>{{ i18n "relSourceHas" }}</td><td>{{ i18n "relSourceNote" }}</td><td><a href="{{ site.Params.linkSource | relLangURL }}">{{ i18n "relGuide" }}</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="rel-sec rel-alt" id="preflight">
+  <div class="wrap">
+    <h2>{{ i18n "relPreTitle" }}</h2>
+    <ul class="rel-check">
+      <li>{{ i18n "relPre1" }}</li>
+      <li>{{ i18n "relPre2" }}</li>
+      <li>{{ i18n "relPre3" }}</li>
+      <li>{{ i18n "relPre4" }}</li>
+      <li>{{ i18n "relPre5" }}</li>
+    </ul>
+  </div>
+</section>
+
+<section class="rel-sec" id="start">
+  <div class="wrap">
+    <h2>{{ i18n "relStartTitle" }}</h2>
+    <div class="rel-start">
+      <div class="rel-panel">
+        <span class="lbl">{{ i18n "relStartWin" }}</span>
+        <div class="cmd"><div class="cmd-row"><span class="cmd-os">CMD</span><code>{{ site.Params.cmdWin }}</code>
+          <button type="button" class="copy" data-copy="{{ site.Params.cmdWin }}" data-label="{{ i18n "ctaCopy" }}" data-done="{{ i18n "ctaCopied" }}">{{ i18n "ctaCopy" }}</button></div></div>
+        <ol><li>{{ i18n "relStart1" }}</li><li>{{ i18n "relStart2" }}</li><li>{{ i18n "relStart3" }}</li></ol>
+      </div>
+      <div class="rel-panel">
+        <span class="lbl">{{ i18n "relStartLinux" }}</span>
+        <div class="cmd"><div class="cmd-row"><span class="cmd-os">SH</span><code>{{ site.Params.cmdLinux }}</code>
+          <button type="button" class="copy" data-copy="{{ site.Params.cmdLinux }}" data-label="{{ i18n "ctaCopy" }}" data-done="{{ i18n "ctaCopied" }}">{{ i18n "ctaCopy" }}</button></div></div>
+        <ol><li>{{ i18n "relStart1" }}</li><li>{{ i18n "relStart2" }}</li><li>{{ i18n "relStart3" }}</li></ol>
+      </div>
+    </div>
+    <p class="rel-note">{{ i18n "relStartNote" }}</p>
+  </div>
+</section>
+
+<section class="rel-sec rel-alt" id="verify">
+  <div class="wrap">
+    <h2>{{ i18n "relVerifyTitle" }}</h2>
+    <p class="lede">{{ i18n "relVerifyLede" }}</p>
+    <div class="cmd rel-verify-cmd">
+      <div class="cmd-row"><span class="cmd-os">WIN</span><code>certutil -hashfile fast-https_Windows_x86_64.zip SHA256</code>
+        <button type="button" class="copy" data-copy="certutil -hashfile fast-https_Windows_x86_64.zip SHA256" data-label="{{ i18n "ctaCopy" }}" data-done="{{ i18n "ctaCopied" }}">{{ i18n "ctaCopy" }}</button></div>
+      <div class="cmd-row"><span class="cmd-os">UNIX</span><code>sha256sum fast-https_Linux_x86_64.tar.gz</code>
+        <button type="button" class="copy" data-copy="sha256sum fast-https_Linux_x86_64.tar.gz" data-label="{{ i18n "ctaCopy" }}" data-done="{{ i18n "ctaCopied" }}">{{ i18n "ctaCopy" }}</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="rel-sec" id="upgrade">
+  <div class="wrap">
+    <h2>{{ i18n "relUpgradeTitle" }}</h2>
+    <p class="lede">{{ i18n "relUpgradeLede" }}</p>
+    <div class="rel-two">
+      <ul class="rel-check">
+        <li>{{ i18n "relUp1" }}</li>
+        <li>{{ i18n "relUp2" }}</li>
+        <li>{{ i18n "relUp3" }}</li>
+      </ul>
+      <div class="rel-known">
+        <span class="lbl">{{ i18n "relKnown" }}</span>
+        <ul><li>{{ i18n "relKnown1" }}</li><li>{{ i18n "relKnown2" }}</li><li>{{ i18n "relKnown3" }}</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="rel-sec rel-alt" id="help">
+  <div class="wrap">
+    <h2>{{ i18n "relHelpTitle" }}</h2>
+    <div class="rel-help">
+      <a href="{{ site.Params.linkInstall | relLangURL }}"><span>{{ i18n "relHelp1" }}</span><p>{{ i18n "relHelp1p" }}</p></a>
+      <a href="{{ site.Params.github }}/issues" target="_blank" rel="noopener"><span>{{ i18n "relHelp2" }}</span><p>{{ i18n "relHelp2p" }}</p></a>
+      {{ with site.Params.linkCommunity }}<a href="{{ . }}" target="_blank" rel="noopener"><span>{{ i18n "relHelp3" }}</span><p>{{ i18n "relHelp3p" }}</p></a>
+      {{ else }}<div class="rel-help-static"><span>{{ i18n "relHelp3" }}</span><p>{{ i18n "enterPending" }}</p></div>{{ end }}
+      <a href="{{ site.Params.linkSource | relLangURL }}"><span>{{ i18n "relHelp4" }}</span><p>{{ i18n "relHelp4p" }}</p></a>
+    </div>
+  </div>
+</section>
+
+{{ partial "footer.html" . }}
+{{ end }}

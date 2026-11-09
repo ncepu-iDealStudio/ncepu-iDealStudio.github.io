@@ -22,7 +22,7 @@ These templates configure the Fast-Https side of common deployments. Serve Vue b
 
 In the Fast-Https v1.5.0 archive, `config/fast-https.json` uses `"include": ["./conf.d"]` to load sites from `config/conf.d/`. Keep your existing settings and create the files named in your chosen example. **Put one JSON object in each file.** If you manage sites in the main file instead, add each object as a separate item in `http.server`. Use one of these methods per site.
 
-Replace the `*.example.com` placeholders with your domains pointing to the Fast-Https host, and make sure the chosen ports are available. The address `127.0.0.1` assumes that the upstream runs on the same machine. If it runs elsewhere, set `proxy_pass` to an address and port reachable from Fast-Https. For HTTPS examples, put the certificate and private key under `config/cert/` and update both paths. See [Serve a site over HTTPS](/en/docs/tutorial/https-access/) for help with certificates.
+Replace the `*.example.com` placeholders with your domains pointing to the Fast-Https host, and make sure the chosen ports are available. The address `127.0.0.1` assumes that the upstream runs on the same machine. If it runs elsewhere, set `proxy_pass` to an address and port reachable from Fast-Https. For HTTPS examples, put the certificate and private key under `config/cert/` and update both paths. See [Serve a site over HTTPS](/docs/tutorial/https-access/) for help with certificates.
 
 ## 2 Serve a Vue site
 
@@ -43,7 +43,7 @@ Put the built `index.html` and assets in the deployment directory. Save the exam
 }
 ```
 
-If your app must fall back to the home page when a client-side route is refreshed, see [Publish a single-page app](/en/docs/tutorial/publish-single-page-site/).
+If your app must fall back to the home page when a client-side route is refreshed, see [Publish a single-page app](/docs/tutorial/publish-single-page-site/).
 
 ## 3 Proxy a Flask API
 

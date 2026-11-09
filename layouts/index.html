@@ -1,55 +1,106 @@
 {{ define "main" }}
-<section class="hero">
+
+<!-- 发布条：版本入口、平台、开源仓库，先让访客知道这是什么、去哪拿 -->
+<section class="ribbon">
+  <div class="wrap ribbon-in">
+    <span class="ribbon-tag">{{ i18n "releaseTag" }}</span>
+    <a class="ribbon-link" href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "releaseLatest" }}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+    <span class="ribbon-meta">{{ i18n "releasePlatforms" }}</span>
+    <span class="ribbon-meta ribbon-meta-last">{{ i18n "releaseSource" }}</span>
+  </div>
+</section>
+
+<section class="hero launch">
   <div class="wrap hero-in">
-    <div>
+    <div class="hero-copy">
       <span class="eyebrow"><span class="sq"></span>{{ i18n "heroEyebrow" }}</span>
       <h1 class="title">{{ i18n "heroTitleA" }}<br><span class="hl">{{ i18n "heroTitleHL" }}</span>{{ i18n "heroTitleB" }}</h1>
       <p class="sub">{{ i18n "heroSub" }}</p>
       <div class="cta">
-        <a class="btn btn-primary" href="{{ site.Params.linkStart }}">{{ i18n "ctaStart" }}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        {{ with site.Params.linkAbout }}<a class="btn btn-ghost" href="{{ . }}">{{ i18n "ctaAbout" }}</a>{{ end }}
+        <a class="btn btn-primary" href="{{ site.Params.linkDownload | relLangURL }}">{{ i18n "ctaDownload" }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></a>
+        <a class="btn btn-ghost" href="{{ site.Params.linkStart | relLangURL }}">{{ i18n "ctaDocs" }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
-      <div class="stats">
-        <div class="m"><b>{{ i18n "stat1v" }} <em>{{ i18n "stat1u" }}</em></b><span>{{ i18n "stat1l" }}</span></div>
-        <div class="m"><b>{{ i18n "stat2v" }} <em>{{ i18n "stat2u" }}</em></b><span>{{ i18n "stat2l" }}</span></div>
-        <div class="m"><b>{{ i18n "stat3v" }} <em>{{ i18n "stat3u" }}</em></b><span>{{ i18n "stat3l" }}</span></div>
+      <div class="cmd">
+        <div class="cmd-row"><span class="cmd-os">WIN</span><code>.\fast-https.exe start</code>
+          <button type="button" class="copy" data-copy="{{ site.Params.cmdWin }}" data-label="{{ i18n "ctaCopy" }}" data-done="{{ i18n "ctaCopied" }}">{{ i18n "ctaCopy" }}</button></div>
+        <div class="cmd-row"><span class="cmd-os">UNIX</span><code>./fast-https start</code>
+          <button type="button" class="copy" data-copy="{{ site.Params.cmdLinux }}" data-label="{{ i18n "ctaCopy" }}" data-done="{{ i18n "ctaCopied" }}">{{ i18n "ctaCopy" }}</button></div>
       </div>
+      <p class="cmd-note">{{ i18n "heroCmdNote" }}</p>
     </div>
 
-    <div class="route">
-      <div class="rh"><span>{{ i18n "routeHeader" }}</span><span class="badge">● {{ i18n "tlsBadge" }}</span></div>
-      <div class="path">
-        <div class="node2"><div class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div><span>{{ i18n "nodeClient" }}</span></div>
-        <div class="wire"></div>
-        <div class="node2"><div class="c t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3Z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg></div><span>Fast-Https</span></div>
-        <div class="wire t"></div>
-        <div class="node2"><div class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></div><span>{{ i18n "nodeServer" }}</span></div>
-      </div>
-      <div class="path" style="margin-top:20px">
-        <div class="node2"><div class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h7l2 2h7M4 17h7l2-2h7"/></svg></div><span>{{ i18n "nodeProxy" }}</span></div>
-        <div class="wire"></div>
-        <div class="node2"><div class="c t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></div><span>{{ i18n "nodeStatic" }}</span></div>
-        <div class="wire t"></div>
-        <div class="node2"><div class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><span>{{ i18n "nodeRate" }}</span></div>
-      </div>
+    <div class="hero-art">
+      <aside class="console" aria-label="Fast-Https request console">
+        <div class="console-h"><span class="console-dot"></span><b>fast-https</b><span class="console-state">{{ i18n "consoleRunning" }}</span><span class="console-port">:443 · :8080</span></div>
+        <div class="console-body">
+          <div class="console-row"><span class="m">GET</span><span class="u">/index.html</span><span class="s ok">200</span></div>
+          <div class="console-row"><span class="m">GET</span><span class="u">/api/user</span><span class="s ok">200</span></div>
+          <div class="console-row"><span class="m">GET</span><span class="u">/admin</span><span class="s warn">401</span></div>
+          <div class="console-row"><span class="m">GET</span><span class="u">/api/user?id=1' OR</span><span class="s err">403</span></div>
+        </div>
+        <div class="console-f"><span>TLS 1.3 · HTTP/2</span><span>{{ i18n "consoleFoot" }}</span></div>
+      </aside>
     </div>
+  </div>
+
+  <div class="wrap trust">
+    <div class="trust-item"><b>{{ i18n "stat1v" }} <em>{{ i18n "stat1u" }}</em></b><span>{{ i18n "stat1l" }}</span></div>
+    <div class="trust-item"><b>{{ i18n "stat2v" }} <em>{{ i18n "stat2u" }}</em></b><span>{{ i18n "stat2l" }}</span></div>
+    <div class="trust-item"><b>{{ i18n "stat3v" }} <em>{{ i18n "stat3u" }}</em></b><span>{{ i18n "stat3l" }}</span></div>
   </div>
 </section>
 
-<section class="sec">
+<section class="sec" id="features">
   <div class="wrap">
-    <div class="sec-head"><div class="k">{{ i18n "capKicker" }}</div><h2>{{ i18n "capTitle" }}</h2></div>
+    <div class="sec-head"><div class="k">{{ i18n "capKicker" }}</div><h2>{{ i18n "capTitle" }}</h2><p class="sec-lede">{{ i18n "capLede" }}</p></div>
     <div class="grid4">
-      <div class="card"><div class="n">01</div><h3>{{ i18n "cap1t" }}</h3><p>{{ i18n "cap1p" }}</p></div>
-      <div class="card"><div class="n">02</div><h3>{{ i18n "cap2t" }}</h3><p>{{ i18n "cap2p" }}</p></div>
-      <div class="card"><div class="n">03</div><h3>{{ i18n "cap3t" }}</h3><p>{{ i18n "cap3p" }}</p></div>
-      <div class="card"><div class="n">04</div><h3>{{ i18n "cap4t" }}</h3><p>{{ i18n "cap4p" }}</p></div>
+      <div class="card"><div class="n">{{ i18n "cap1k" }}</div><h3>{{ i18n "cap1t" }}</h3><p>{{ i18n "cap1p" }}</p></div>
+      <div class="card"><div class="n">{{ i18n "cap2k" }}</div><h3>{{ i18n "cap2t" }}</h3><p>{{ i18n "cap2p" }}</p></div>
+      <div class="card"><div class="n">{{ i18n "cap3k" }}</div><h3>{{ i18n "cap3t" }}</h3><p>{{ i18n "cap3p" }}</p></div>
+      <div class="card"><div class="n">{{ i18n "cap4k" }}</div><h3>{{ i18n "cap4t" }}</h3><p>{{ i18n "cap4p" }}</p></div>
     </div>
   </div>
 </section>
 
 {{ partial "architecture.html" . }}
+
+<!-- 发布区：全站唯一一处深色块，把"拿到二进制"这件事单独框出来 -->
+<section class="release" id="download">
+  <div class="wrap release-in">
+    <div class="release-l">
+      <div class="k">{{ i18n "downloadKicker" }}</div>
+      <h2>{{ i18n "downloadTitle" }}</h2>
+      <p>{{ i18n "downloadSub" }}</p>
+      <div class="release-links">
+        <a href="{{ site.Params.linkDownload | relLangURL }}">{{ i18n "downloadPageCta" }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="{{ site.Params.releases }}" target="_blank" rel="noopener">{{ i18n "downloadGithub" }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+        <a href="{{ site.Params.releasesGitee }}" target="_blank" rel="noopener">{{ i18n "downloadGitee" }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+      </div>
+    </div>
+    <div class="release-r">
+      <div class="pkg"><span class="pkg-os">Windows</span><code>fast-https_Windows_x86_64.zip</code><span class="pkg-note">{{ i18n "downloadWin" }}</span></div>
+      <div class="pkg"><span class="pkg-os">Linux</span><code>fast-https_Linux_x86_64.tar.gz</code><span class="pkg-note">{{ i18n "downloadLinux" }}</span></div>
+      <div class="pkg"><span class="pkg-os">Source</span><code>go build -o fast-https ./cmd/server</code></div>
+      <p class="release-note">{{ i18n "downloadNote" }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="enter" id="community">
+  <div class="wrap">
+    <div class="sec-head"><div class="k">{{ i18n "enterKicker" }}</div><h2>{{ i18n "enterTitle" }}</h2></div>
+    <div class="enter-in four">
+      <a href="{{ site.Params.linkStart | relLangURL }}"><div class="l">{{ i18n "enter1l" }}</div><h3>{{ i18n "enter1t" }}</h3><p>{{ i18n "enter1p" }}</p></a>
+      <a href="{{ site.Params.linkDownload | relLangURL }}"><div class="l">{{ i18n "enter2l" }}</div><h3>{{ i18n "enter2t" }}</h3><p>{{ i18n "enter2p" }}</p></a>
+      <a href="#features"><div class="l">{{ i18n "enter3l" }}</div><h3>{{ i18n "enter3t" }}</h3><p>{{ i18n "enter3p" }}</p></a>
+      {{ with site.Params.linkCommunity }}<a href="{{ . }}" target="_blank" rel="noopener"><div class="l">{{ i18n "enter4l" }}</div><h3>{{ i18n "enter4t" }}</h3><p>{{ i18n "enter4p" }}</p></a>
+      {{ else }}<div class="enter-card"><div class="l">{{ i18n "enter4l" }}</div><h3>{{ i18n "enter4t" }}</h3><p>{{ i18n "enterPending" }}</p></div>{{ end }}
+    </div>
+  </div>
+</section>
 
 {{ partial "footer.html" . }}
 {{ end }}

@@ -239,4 +239,79 @@
     window.addEventListener('resize', storyOnScroll);
     storyOnScroll();
   }
+
+  // 产品页：可复制的启动命令
+  document.querySelectorAll('.copy[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var value = btn.getAttribute('data-copy') || '';
+      var label = btn.getAttribute('data-label') || 'COPY';
+      var done = btn.getAttribute('data-done') || 'COPIED';
+      var finish = function () {
+        btn.textContent = done;
+        btn.classList.add('done');
+        setTimeout(function () {
+          btn.textContent = label;
+          btn.classList.remove('done');
+        }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(finish, function () {});
+        return;
+      }
+      var ta = document.createElement('textarea');
+      ta.value = value;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); finish(); } catch (e) { /* 复制不可用时保持原样 */ }
+      document.body.removeChild(ta);
+    });
+  });
+
+  // 发行页：当前版本与工件清单以 GitHub Releases 为准；网络不可用时保留模板里的静态清单
+  var rel = document.getElementById('relCurrent');
+  if (rel && typeof fetch === 'function') {
+    var repo = rel.getAttribute('data-repo');
+    var ctrl = ('AbortController' in window) ? new AbortController() : null;
+    var relTimer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 6000);
+    fetch('https://api.github.com/repos/' + repo + '/releases/latest',
+      ctrl ? { signal: ctrl.signal } : undefined)
+      .then(function (r) { clearTimeout(relTimer); return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.tag_name) return;
+        document.getElementById('relVersion').textContent = d.tag_name;
+        if (d.published_at) document.getElementById('relDate').textContent = String(d.published_at).slice(0, 10);
+        document.getElementById('relSource').textContent = rel.getAttribute('data-t-live');
+        var list = document.getElementById('relAssetList');
+        var assets = (d.assets || []).slice(0, 8);
+        list.innerHTML = '';
+        if (!assets.length) {
+          var empty = document.createElement('p');
+          empty.className = 'rel-assets-hint';
+          empty.textContent = rel.getAttribute('data-t-noassets');
+          list.appendChild(empty);
+          return;
+        }
+        assets.forEach(function (a) {
+          var row = document.createElement('div');
+          row.className = 'rel-asset';
+          var name = document.createElement('code');
+          name.textContent = a.name;
+          var meta = document.createElement('span');
+          var size = a.size >= 1048576 ? (a.size / 1048576).toFixed(1) + ' MB' : Math.round(a.size / 1024) + ' KB';
+          meta.textContent = size + ' · ' + (a.download_count || 0) + ' ' + (rel.getAttribute('data-t-downloads') || '');
+          var link = document.createElement('a');
+          link.href = a.browser_download_url;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.textContent = rel.getAttribute('data-t-get') || 'GET';
+          row.appendChild(name);
+          row.appendChild(meta);
+          row.appendChild(link);
+          list.appendChild(row);
+        });
+      })
+      .catch(function () { clearTimeout(relTimer); });
+  }
 })();

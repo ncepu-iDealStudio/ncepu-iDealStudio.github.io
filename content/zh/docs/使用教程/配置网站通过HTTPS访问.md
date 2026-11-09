@@ -201,5 +201,5 @@ curl --noproxy '*' --cacert test-root.crt -fsS -o /dev/null \
 
 将 `server_name` 改为站点的实际域名，将 `ssl_certificate` 和 `ssl_certificate_key` 指向受客户端信任、覆盖该域名的站点证书及其对应私钥。使用 HTTPS 默认端口时，将 HTTPS 站点的 `listen` 设为 `"443 ssl"`。
 
-- 需要让 HTTP 入口跳转到 HTTPS 时，参阅[如何为网站配置重定向功能](/docs/使用教程/如何为网站配置重定向功能/)。
-- 需要了解站点配置结构时，参阅[基本配置](/docs/使用教程/基本配置/)。
+- 需要让 HTTP 入口跳转到 HTTPS 时，参阅[如何为网站配置重定向功能](/zh/docs/使用教程/如何为网站配置重定向功能/)。
+- 需要了解站点配置结构时，参阅[基本配置](/zh/docs/使用教程/基本配置/)。

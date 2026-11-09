@@ -201,5 +201,5 @@ When you finish, stop the service from the second terminal.
 
 Set `server_name` to your site's hostname. Point `ssl_certificate` and `ssl_certificate_key` to a certificate trusted by clients and valid for that hostname, and to its matching private key. To use the default HTTPS port, set the HTTPS site's `listen` to `"443 ssl"`.
 
-- To send visitors from HTTP to HTTPS, see [Configure redirects](/en/docs/tutorial/redirects/).
-- For more about the site configuration format, see [Basic configuration](/en/docs/tutorial/basic-configuration/).
+- To send visitors from HTTP to HTTPS, see [Configure redirects](/docs/tutorial/redirects/).
+- For more about the site configuration format, see [Basic configuration](/docs/tutorial/basic-configuration/).
