@@ -44,11 +44,6 @@
     <div class="paper">
       <article class="doc">{{ $content }}</article>
     </div>
-    <nav class="pager">
-      {{/* NextInSection returns the preceding page in the sidebar order. */}}
-      {{ with .NextInSection }}<a href="{{ .RelPermalink }}"><span class="lbl">{{ i18n "prevPage" }}</span><span class="tt">{{ .Title }}</span></a>{{ end }}
-      {{ with .PrevInSection }}<a class="next" href="{{ .RelPermalink }}"><span class="lbl">{{ i18n "nextPage" }}</span><span class="tt">{{ .Title }}</span></a>{{ end }}
-    </nav>
   </main>
 
   <aside class="toc">
