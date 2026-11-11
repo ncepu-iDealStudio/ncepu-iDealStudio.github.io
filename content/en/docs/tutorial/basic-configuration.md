@@ -23,7 +23,7 @@ On Windows, double click `monitor.exe` in the application folder; on Linux, run 
 
 ## 2 Default page
 
-Once the service is running, open `http://localhost:8080/` to see the default Fast-Https start page, which offers the root certificate `root.crt` for download (see [Serve a site over HTTPS](/en/docs/tutorial/https-access/)).
+Once the service is running, open `http://localhost:8080/` to see the default Fast-Https start page, which offers the root certificate `root.crt` for download (see [Serve a site over HTTPS](/docs/tutorial/https-access/)).
 
 ## 3 Where the configuration file lives
 
@@ -83,9 +83,9 @@ A `location` block uses `type` to select the handler:
 
 | `type` | Meaning | Related options | Reference |
 | --- | --- | --- | --- |
-| `local` | Publish a local static directory | `root`, `index`, `try` | [Publish a local static site](/en/docs/tutorial/publish-local-static-site/) |
-| `proxy` | Reverse proxy an upstream service | `proxy_pass`, `proxy_set_header`, `proxy_cache` | [Reverse proxy a site](/en/docs/tutorial/reverse-proxy-site/) |
-| `rewrite` | Redirect to another address | `rewrite` | [Configure redirects](/en/docs/tutorial/redirects/) |
+| `local` | Publish a local static directory | `root`, `index`, `try` | [Publish a local static site](/docs/tutorial/publish-local-static-site/) |
+| `proxy` | Reverse proxy an upstream service | `proxy_pass`, `proxy_set_header`, `proxy_cache` | [Reverse proxy a site](/docs/tutorial/reverse-proxy-site/) |
+| `rewrite` | Redirect to another address | `rewrite` | [Configure redirects](/docs/tutorial/redirects/) |
 
 ## 5 Apply the changes
 

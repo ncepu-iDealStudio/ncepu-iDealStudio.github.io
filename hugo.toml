@@ -1,12 +1,12 @@
 baseURL = 'https://ncepu-idealstudio.github.io/'
-locale = 'zh-cn'
-title = 'Fast-Https 文档'
+locale = 'en-us'
+title = 'Fast-Https'
 summaryLength = 24
 disableKinds = ["taxonomy"]
 enableGitInfo = true
 
-# 默认语言中文，直接挂在根路径；英文在 /en/ 下
-defaultContentLanguage = 'zh'
+# 默认语言英文，直接挂在根路径；中文在 /zh/ 下
+defaultContentLanguage = 'en'
 defaultContentLanguageInSubdir = false
 
 [frontmatter]
@@ -23,6 +23,11 @@ defaultContentLanguageInSubdir = false
 [params]
   gitee = 'https://gitee.com/ncepu-bj/fast-https'
   github = 'https://github.com/ncepu-iDealStudio/Fast-Https'
+  releases = 'https://github.com/ncepu-iDealStudio/Fast-Https/releases'
+  releasesGitee = 'https://gitee.com/ncepu-bj/fast-https/releases'
+  # 首页可复制的启动命令（与发行包里的实际命令一致）
+  cmdWin = '.\fast-https.exe start'
+  cmdLinux = './fast-https start'
   giteeStars = 37
 
 [markup.goldmark.renderer]
@@ -39,46 +44,76 @@ defaultContentLanguageInSubdir = false
     locale = 'zh-CN'
     contentDir = 'content/zh'
     hasCJKLanguage = true
-    weight = 1
+    weight = 2
     title = 'Fast-Https 文档'
     [languages.zh.params]
       description = 'Fast-Https：Windows 可视化 HTTPS 与反向代理管理工具的使用文档。'
-      linkStart = '/docs/欢迎/'
-      linkInstall = '/docs/软件获取/软件获取与安装/'
-      linkTutorial = '/docs/使用教程/基本配置/'
-      linkHttps = '/docs/使用教程/配置网站通过HTTPS访问/'
-      linkAbout = '/about/'
+      linkStart = 'docs/欢迎/'
+      linkInstall = 'docs/软件获取/软件获取与安装/'
+      linkTutorial = 'docs/使用教程/基本配置/'
+      linkHttps = 'docs/使用教程/配置网站通过HTTPS访问/'
+      linkDownload = 'download/'
+      linkDocker = 'docs/软件获取/docker/'
+      linkSource = 'docs/软件获取/从源代码构建/'
+      # 社区入口：拿到飞书群邀请链接后填这里；留空时首页该项显示"待接入"
+      linkCommunity = ''
 
     [[languages.zh.menus.main]]
-      name = '软件获取'
-      pageRef = '/docs/软件获取/软件获取与安装/'
+      name = '文档'
+      pageRef = '/docs/欢迎/'
       weight = 1
 
     [[languages.zh.menus.main]]
-      name = '使用教程'
-      pageRef = '/docs/使用教程/基本配置/'
+      name = '下载'
+      pageRef = '/download/'
       weight = 2
+
+    [[languages.zh.menus.main]]
+      name = '特性'
+      url = '/zh/#features'
+      weight = 3
+
+    [[languages.zh.menus.main]]
+      name = '社区'
+      identifier = 'community'
+      url = '/zh/#community'
+      weight = 4
 
   [languages.en]
     label = 'English'
     locale = 'en-US'
     contentDir = 'content/en'
-    weight = 2
-    title = 'Fast-Https Docs'
+    weight = 1
+    title = 'Fast-Https — Automatic HTTPS & Reverse Proxy'
     [languages.en.params]
-      description = 'Documentation for Fast-Https, a visual HTTPS and reverse proxy manager for Windows.'
-      linkStart = '/en/docs/welcome/'
-      linkInstall = '/en/docs/install/'
-      linkTutorial = '/en/docs/tutorial/basic-configuration/'
-      linkHttps = '/en/docs/tutorial/https-access/'
-      linkAbout = '/en/about/'
+      description = 'Fast-Https is a visual HTTPS and reverse proxy server for Windows and Linux. Issue certificates, publish sites and manage traffic from one place.'
+      linkStart = 'docs/welcome/'
+      linkInstall = 'docs/install/'
+      linkTutorial = 'docs/tutorial/basic-configuration/'
+      linkHttps = 'docs/tutorial/https-access/'
+      linkDownload = 'download/'
+      linkDocker = 'docs/install/docker/'
+      linkSource = 'docs/install/build-from-source/'
+      # Community entry: fill in the Feishu group invite URL when available
+      linkCommunity = ''
 
     [[languages.en.menus.main]]
-      name = 'Get Started'
-      pageRef = '/docs/install/'
+      name = 'Docs'
+      pageRef = '/docs/welcome/'
       weight = 1
 
     [[languages.en.menus.main]]
-      name = 'Tutorials'
-      pageRef = '/docs/tutorial/'
+      name = 'Download'
+      pageRef = '/download/'
       weight = 2
+
+    [[languages.en.menus.main]]
+      name = 'Features'
+      url = '/#features'
+      weight = 3
+
+    [[languages.en.menus.main]]
+      name = 'Community'
+      identifier = 'community'
+      url = '/#community'
+      weight = 4

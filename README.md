@@ -19,11 +19,12 @@ Fast-Https 是一款用 Go 编写的 Web 服务器 / HTTPS 反向代理工具，
 
 本站点负责把这些能力讲清楚，内容包括：
 
+- **发行页**（`/download/`、`/zh/download/`）：当前版本与工件清单、安装包 / 便携包 / Linux / Docker / 源码的选型对照、装前检查、三步上手、SHA256 校验、升级与已知问题
 - **软件获取与安装**：发行版下载地址、源码仓库、Windows（压缩包 / 安装包）、Linux、Docker、源码构建
 - **使用教程**：基本配置、静态站点与单页应用发布、反向代理、WebSocket、重定向、HTTPS、缓存、IP 黑名单、限流
 - **团队时间线**：iDealStudio 工作室从 2019 年 Go 学习小组到 Fast-Https 1.0.0 的发展记录
 
-站点支持中英双语：中文在根路径 `/`，英文在 `/en/` 下。
+站点支持中英双语：英文为默认语言，挂在根路径 `/`；中文在 `/zh/` 下。
 
 ## 🛠 开发环境配置
 
@@ -80,18 +81,21 @@ hugo --gc --minify
 ```text
 .
 ├─ content/                  # 内容（按语言分目录）
-│  ├─ zh/                    # 中文，映射到 /
+│  ├─ zh/                    # 中文，映射到 /zh/
 │  │  ├─ _index.md           # 首页
 │  │  ├─ about.md            # 团队时间线页（type: about）
+│  │  ├─ download.md         # 发行页（type: download）
 │  │  ├─ docs/               # 文档：欢迎、软件获取、使用教程
 │  │  └─ timeline/           # 时间线节点（每个 md 一个节点）
-│  └─ en/                    # 英文，映射到 /en/
+│  └─ en/                    # 英文（默认语言），映射到 /
 │     ├─ about.md
+│     ├─ download.md
 │     ├─ docs/               # welcome、install、tutorial
 │     └─ timeline/
 ├─ layouts/                  # 模板
 │  ├─ index.html             # 首页
 │  ├─ about/single.html      # 时间线故事页
+│  ├─ download/single.html   # 发行页
 │  ├─ docs/{single,section}.html
 │  ├─ timeline/list.html
 │  ├─ _default/

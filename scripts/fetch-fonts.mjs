@@ -1,11 +1,13 @@
 /**
- * 按站点实际用到的字符，从 Google Fonts 抓取 woff2 切片并自托管。
+ * 按站点实际用到的字符，从 Google Fonts 抓取拉丁字体切片并自托管。
  *
- * 为什么要这么做：中文字体全量 5MB+，全量自托管不可接受；Google Fonts 本身
- * 就把 Noto Serif SC 切成了 100 多个 unicode-range 分片，我们只保留「站点文案
- * 真正覆盖到」的分片，剩下的交给系统字体兜底。
+ * 中文不再自托管：Noto Serif SC 被切成 100 多个 unicode-range 分片，按「当前文案
+ * 用到的字符」抓取子集后，任何新增汉字都会落到没有收录的分片里，同行出现
+ * 自托管字形 + 系统字体混排（字重/字形不一致，看起来像"扭曲"），而且每次改
+ * 文案都要重跑。中文统一交给系统字体栈，见 main.css 的 --serif/--sans/--mono。
+ * static/fonts/noto-serif-sc/ 是历史遗留文件，不再被引用，可随时清理。
  *
- * 用法（改动内容后重跑一次即可，新增字符可能落到新的分片里）：
+ * 用法（改动拉丁文案后重跑一次）：
  *   node scripts/fetch-fonts.mjs
  *
  * 产物：static/fonts/** 与 static/css/fonts.css —— 两个都要提交。
@@ -58,7 +60,6 @@ function parseRanges(str) {
 const hits = (ranges) => codes.some((c) => ranges.some(([lo, hi]) => c >= lo && c <= hi));
 
 const FAMILIES = [
-  { name: 'Noto Serif SC', slug: 'noto-serif-sc', query: 'Noto+Serif+SC:wght@700' },
   { name: 'IBM Plex Sans', slug: 'ibm-plex-sans', query: 'IBM+Plex+Sans:wght@400;500;600' },
   { name: 'IBM Plex Mono', slug: 'ibm-plex-mono', query: 'IBM+Plex+Mono:wght@400;500' },
 ];
