@@ -11,14 +11,14 @@ Download the Windows installer (`.exe`) from the release page, run it and follow
 
 ## 1 Download the installer
 
-Find it in the v1.6.1 assets on the [release page](https://gitee.com/ncepu-bj/fast-https/releases) and download it:
+Open the [release page](https://gitee.com/ncepu-bj/fast-https/releases) and find the installer in the asset list of the **topmost** release. Filenames look like this:
 
 ```text
-fast-https-1.6.1-windows-amd64-setup.exe      # x64
-fast-https-1.6.1-windows-arm64-setup.exe      # ARM64
+fast-https-<version>-windows-amd64-setup.exe      # x64
+fast-https-<version>-windows-arm64-setup.exe      # ARM64
 ```
 
-Match on `fast-https-<version>-windows-<arch>-setup.exe`. The same page also offers `fast-https_Windows_x86_64.zip` if you prefer the portable build.
+`<version>` comes from whichever release you download; no version is hardcoded here, so the example cannot go stale after a new release. Match on `fast-https-<version>-windows-<arch>-setup.exe`. The same page also offers `fast-https_Windows_x86_64.zip` if you prefer the portable build.
 
 ![Downloading the installer](/assets/images/docs/install/windows/exe-01.png)
 

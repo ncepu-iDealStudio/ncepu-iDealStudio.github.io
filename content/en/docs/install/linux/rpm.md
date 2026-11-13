@@ -14,7 +14,7 @@ This guide deploys Fast-Https on CentOS and other `yum`-based distributions from
 
 - Run every command **in the server's terminal** with administrative rights. Log in as `root`, or prefix each command with `sudo`.
 - The default site uses **ports 80 and 443**. On a cloud server, allow both in the console first and make sure no other program occupies them.
-- Download the package from [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) or [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases); use the latest version shown on that page.
+- Download the package from [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) or [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases). No version number is hardcoded in this guide: pick the newest release on that page yourself, so the instructions do not go stale after a new release.
 
 **About the "Expected output" blocks**: every output below comes from one complete run. On that machine port 80 was already used by another site, so `listen` was changed to `18080` / `18443` as described in step 3, and the verification URLs use those ports too. If your ports 80 / 443 are free, substitute the defaults — the shape of the output is identical.
 
@@ -23,6 +23,7 @@ This guide deploys Fast-Https on CentOS and other `yum`-based distributions from
 `.rpm` is the package format used by CentOS and the RHEL family. Different processors need different packages, so check yours first:
 
 ```bash
+# Show the processor architecture
 uname -m
 ```
 
@@ -34,27 +35,40 @@ x86_64
 
 `x86_64` maps to the `amd64` package; `aarch64` maps to `arm64`.
 
-The download command has two version numbers, both taken from the latest release: `VER` is the tag on the releases page (with a `v`), and `PKG` is the version inside the filename (without the `v`). For example, tag `v1.6.0` corresponds to `1.6.0` in the filename:
+**Get the download link from the releases page yourself** — no version number is hardcoded here, so a new release cannot turn this into a stale link:
+
+![Asset list on the Gitee releases page; the red arrow points to the .rpm server package for x86_64](/assets/images/docs/install/linux/centos/release-assets.png)
+
+The arrow marks the `amd64` package; on `aarch64`, pick the one ending in `arm64` instead. Use whatever version the topmost release offers.
+
+1. Open [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) or [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases) in a browser, find the **topmost** release and expand its asset list.
+2. Pick the **server** `.rpm` asset for your architecture: `x86_64` needs a filename containing `amd64`, `aarch64` needs `arm64`. Do not pick the `fast-https-desktop` desktop edition.
+3. **Right-click the download button → copy link address**.
+4. Back in the server terminal, replace the address inside the quotes with the link you copied, then run:
 
 ```bash
-VER=v1.6.0
-PKG=1.6.0
-wget -O fast-https.rpm "https://gitee.com/ncepu-bj/fast-https/releases/download/$VER/fast-https_${PKG}_linux_amd64.rpm"
+# Download the package and give it a fixed name
+wget -O fast-https.rpm 'paste the copied download link here'
+# Confirm the package downloaded and its size
 ls -lh fast-https.rpm
 ```
 
-**Expected output** (`wget` is quiet; only `ls` prints a line)
+`-O fast-https.rpm` gives the downloaded file one fixed name, which every later command uses — **you never need to edit a version number anywhere in this guide**. Keep the single quotes; the link may contain special characters.
+
+**Expected output** (`wget`'s progress output is omitted; only the `ls` line is shown)
 
 ```text
 -rw-r--r-- 1 root root 6.5M Nov 10 19:52 fast-https.rpm
 ```
 
-Seeing the filename and size means the download worked. On an `aarch64` machine, replace `amd64` at the end with `arm64`.
+Seeing the filename and size means the download worked. If you prefer downloading on your own computer, upload the package with `scp` or an FTP tool into the current directory and rename it to `fast-https.rpm`; the result is the same.
 
 ## 2 Install
 
 ```bash
+# Install the .rpm package
 yum install -y ./fast-https.rpm
+# Show details of the installed package
 rpm -qi fast-https
 ```
 
@@ -75,6 +89,10 @@ Installed:
 Complete!
 ```
 
+![Output of yum install for the .rpm package, ending in Complete!](/assets/images/docs/install/linux/centos/yum-install.png)
+
+The screenshot uses the original filename from the releases page; with the `-O` rename above, the output looks the same.
+
 `Complete!` marks the end of the installation; the three `fast-https:` lines are paths and a start hint printed by the install script. The beginning of `rpm -qi` looks like this:
 
 ```text
@@ -86,6 +104,10 @@ Group       : Applications/Internet
 Size        : 17292444
 License     : GPL-2.0
 ```
+
+![Installed package name, version and architecture reported by rpm -qi](/assets/images/docs/install/linux/centos/rpm-query.png)
+
+The version number shown here is just the package used during the test run; yours will differ if you downloaded a newer release.
 
 Installed file locations (you will need these when editing configuration or reading logs):
 
@@ -103,6 +125,7 @@ Installed file locations (you will need these when editing configuration or read
 The pid file records the process ID; the systemd unit is the service's configuration text. Print the resolved locations at any time with:
 
 ```bash
+# Show the config paths the program uses
 fast-https config path
 ```
 
@@ -115,11 +138,16 @@ log    /var/log/fast-https
 pid    /run/fast-https/fast-https.pid
 ```
 
+![Config, certificate, log and pid paths printed by fast-https config path](/assets/images/docs/install/linux/centos/config-path.png)
+
+Newer releases also print `root_crt` and `state`, which are additional paths; the number of lines may differ between versions.
+
 ## 3 Start and enable at boot
 
 First check whether ports 80 / 443 are in use:
 
 ```bash
+# Check whether ports 80/443 are in use
 ss -lntp | grep -E ':(80|443)\b'
 ```
 
@@ -130,10 +158,14 @@ LISTEN     0      511          *:80    *:*    users:(("nginx",pid=7677,fd=8),...
 LISTEN     0      511       [::]:80 [::]:*   users:(("nginx",pid=7677,fd=9),...)
 ```
 
+![ss shows ports 80 and 443 already occupied by nginx](/assets/images/docs/install/linux/centos/ports-in-use.png)
+
 No output means the ports are free; a process name such as `nginx` means the port is taken. Do not stop someone else's service — change your own configuration instead: edit `/etc/fast-https/conf.d/default.json` and change `listen` from `[80, "443 ssl h2"]` to free ports, for example:
 
 ```bash
+# Change the default ports to 18080/18443
 sed -i 's|"listen": \[80, "443 ssl h2"\]|"listen": [18080, "18443 ssl h2"]|' /etc/fast-https/conf.d/default.json
+# Confirm the port change took effect
 grep -n '"listen"' /etc/fast-https/conf.d/default.json
 ```
 
@@ -143,13 +175,18 @@ grep -n '"listen"' /etc/fast-https/conf.d/default.json
 2:  "listen": [18080, "18443 ssl h2"],
 ```
 
+![Changing the listen ports with sed and confirming the result with grep](/assets/images/docs/install/linux/centos/change-listen-port.png)
+
 Use these ports in every verification URL below. If the ports were free, skip this part and keep 80 / 443.
 
 The package registers a **systemd service** named `fast-https.service`. systemd is the component that manages background services on Linux; `systemctl` is the command used to control it.
 
 ```bash
+# Start and enable at boot
 systemctl enable --now fast-https.service
+# Check whether the service is running
 systemctl is-active fast-https.service
+# Inspect the service status
 systemctl status fast-https.service --no-pager
 ```
 
@@ -166,6 +203,8 @@ active
            └─8395 /usr/bin/fast-https start
 ```
 
+![Output of systemctl enable --now, is-active and status; the service is active](/assets/images/docs/install/linux/centos/service-status.png)
+
 `Created symlink` means start-at-boot is enabled; `active` means the service is running; `Main PID` is the process ID and differs on every start.
 
 The unit already sets `Restart=on-failure` (restart after a crash), `RestartSec=2s` and `ExecReload=/usr/bin/fast-https reload`, so none of that needs manual configuration.
@@ -173,7 +212,9 @@ The unit already sets `Restart=on-failure` (restart after a crash), `RestartSec=
 ## 4 Verify the default site
 
 ```bash
+# Verify HTTP returns 200
 curl -sS -o /dev/null -w 'HTTP %{http_code}\n' http://127.0.0.1:18080/
+# Verify HTTPS (skip self-signed cert validation)
 curl -sk -o /dev/null -w 'HTTPS %{http_code} TLS=%{ssl_verify_result}\n' https://localhost:18443/
 ```
 
@@ -184,11 +225,14 @@ HTTP 200
 HTTPS 200 TLS=0
 ```
 
+![curl verification returning HTTP 200 and HTTPS 200 TLS=0](/assets/images/docs/install/linux/centos/http-https-verify.png)
+
 `200` is the status code for a successful request; `-k` skips verification of the self-signed certificate and `TLS=0` indicates the TLS connection itself is healthy. With free ports, use `http://127.0.0.1/` and `https://localhost/` instead.
 
 Confirm the listeners:
 
 ```bash
+# Show the ports the service listens on
 ss -lntp | grep -E ':(18080|18443)\b'
 ```
 
@@ -214,14 +258,22 @@ On a cloud server, open `http://<server public IP>:18080/` in a browser on your 
 The package registers `fast-https.service`, so use `systemctl` for day-to-day management:
 
 ```bash
-systemctl start fast-https.service                  # start
-systemctl enable --now fast-https.service          # start and enable at boot
-systemctl is-active fast-https.service             # check whether it is running
-systemctl status fast-https.service --no-pager     # inspect status
-systemctl restart fast-https.service              # restart after a config change
-fast-https reload                                 # or just reapply configuration
-journalctl -u fast-https.service -n 30 --no-pager # read recent logs
-systemctl disable --now fast-https.service        # stop and disable startup at boot
+# Start the service
+systemctl start fast-https.service
+# Start and enable at boot
+systemctl enable --now fast-https.service
+# Check whether the service is running
+systemctl is-active fast-https.service
+# Inspect the service status
+systemctl status fast-https.service --no-pager
+# Restart after a config change
+systemctl restart fast-https.service
+# Reapply the configuration
+fast-https reload
+# Read recent service logs
+journalctl -u fast-https.service -n 30 --no-pager
+# Stop and disable start at boot
+systemctl disable --now fast-https.service
 ```
 
 `fast-https reload` and `systemctl restart` print **nothing** on success; verify with `systemctl is-active fast-https.service`, which prints `active`. `disable --now` prints:
@@ -235,6 +287,7 @@ After that, `is-active` returns `unknown` (or `inactive`) — both mean the serv
 To remove the package:
 
 ```bash
+# Remove the package
 yum remove -y fast-https
 ```
 
@@ -257,7 +310,7 @@ A modified configuration file is kept as `.rpmsave` rather than silently discard
 
 | Symptom | What to do |
 | --- | --- |
-| Download returns 404 | `VER` or `PKG` is wrong; check the latest tag and filename on the releases page |
+| Download returns 404 | The copied link is wrong or points to an old release; go back to the releases page and copy the matching asset link from the topmost release again |
 | `yum` cannot find the file | Confirm you are in the directory with `fast-https.rpm`, and that `./` is present |
 | The port check lists nginx or another process | Follow step 3 and change `listen`; do not stop someone else's service |
 | `is-active` does not print `active` | Run `systemctl status fast-https.service --no-pager` and check the logs |

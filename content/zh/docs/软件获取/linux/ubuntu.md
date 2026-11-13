@@ -15,45 +15,53 @@ lastmod: 2026-11-07
 - 所有命令都在**服务器的终端**里执行。
 - 需要一个带 `sudo` 权限的账号。`sudo` 表示「用管理员权限执行这一条命令」，执行时可能要求输入密码。
 - 默认站点占用 **80 和 443** 端口。云服务器请先到控制台放行这两个端口，并确认没有被 Nginx 之类的程序占用（第 3 步会检查）。
-- 安装包要从 [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) 或 [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases) 下载，版本号以页面上的最新版为准。
+- 安装包从 [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) 或 [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases) 下载。文档里不写版本号，请到发行页自己选最新版，避免版本更新后文档里的链接变成旧版。
 
 ## 1 确认架构并下载安装包
 
 不同处理器要用不同的安装包。先查架构：
 
 ```bash
+# 查看系统架构
 dpkg --print-architecture
 ```
 
 - 输出 `amd64` → 下载文件名含 `amd64` 的包（大多数云服务器）
 - 输出 `arm64` → 下载文件名含 `arm64` 的包
 
-在服务器上下载安装包。下面以 `amd64` 为例，命令里的版本号请换成 releases 页上的最新版：
+**下载链接请自己到发行页取**，文档里不写版本号，这样版本更新后也不会在这里留下一个过期的链接：
+
+1. 在浏览器打开 [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) 或 [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases)，找到**最上面一条** release，展开它的附件列表。
+2. 按架构挑**服务端** `.deb` 包：`amd64` 选文件名含 `linux_amd64.deb` 的，`arm64` 选含 `linux_arm64.deb` 的。`fast-https-desktop` 开头的是带图形界面的桌面版，服务器上不需要。
+3. 在该附件的下载按钮上**右键 → 复制链接地址**。
+4. 回到服务器终端，把下面命令引号里的地址整个换成刚复制的链接，然后执行：
 
 ```bash
-wget https://gitee.com/ncepu-bj/fast-https/releases/download/v1.6.0/fast-https_1.6.0_linux_amd64.deb
-ls -lh *.deb
+# 下载安装包并统一命名
+wget -O fast-https.deb '在这里粘贴复制到的下载链接'
+# 确认安装包已下载及大小
+ls -lh fast-https.deb
 ```
 
-`ls -lh` 会列出刚下载的文件和大小，能看到文件就表示下载成功。也可以在 releases 页面点下载后把文件上传到服务器，效果一样。
+`-O fast-https.deb` 会把文件统一命名成 `fast-https.deb`，后面安装命令就用这个名字，所以**整篇文档不需要你改任何版本号**。单引号不要省略。`ls -lh` 能看到文件和大小即表示下载成功；如果习惯在自己电脑上点下载，也可以用 `scp` 或 FTP 工具上传后改名为 `fast-https.deb`。
 
-| 架构 | 服务端安装包 | 下载 |
+| 架构 | 附件文件名包含 | 从哪里下载 |
 | --- | --- | --- |
-| `amd64` | `fast-https_1.6.0_linux_amd64.deb` | [Gitee](https://gitee.com/ncepu-bj/fast-https/releases/download/v1.6.0/fast-https_1.6.0_linux_amd64.deb) / [GitHub](https://github.com/ncepu-iDealStudio/Fast-Https/releases/download/v1.6.0/fast-https_1.6.0_linux_amd64.deb) |
-| `arm64` | `fast-https_1.6.0_linux_arm64.deb` | [Gitee](https://gitee.com/ncepu-bj/fast-https/releases/download/v1.6.0/fast-https_1.6.0_linux_arm64.deb) / [GitHub](https://github.com/ncepu-iDealStudio/Fast-Https/releases/download/v1.6.0/fast-https_1.6.0_linux_arm64.deb) |
-
-请选**服务端包**：`fast-https-desktop` 开头的是带图形界面的桌面版，服务器上不需要。
+| `amd64` | `linux_amd64.deb` | [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) / [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases) |
+| `arm64` | `linux_arm64.deb` | 同上 |
 
 ## 2 安装
 
 进入安装包所在目录后执行。`./` 表示「当前目录里的这个文件」，不能省略：
 
 ```bash
-sudo apt install ./fast-https_1.6.0_linux_amd64.deb
+# 安装 .deb 包
+sudo apt install ./fast-https.deb
+# 确认已安装的包名和版本
 dpkg-query -W fast-https
 ```
 
-`arm64` 系统请把文件名换成上表对应的 `arm64` 包。`dpkg-query` 会打印包名和版本，能看到 `fast-https` 就说明安装成功。
+`./` 表示「当前目录里的这个文件」，不能省略。因为下载时已经统一命名为 `fast-https.deb`，`amd64` 和 `arm64` 都用这一条命令。`dpkg-query` 会打印包名和版本，能看到 `fast-https` 就说明安装成功。
 
 安装后的文件位置（以后改配置、找日志会用到）：
 
@@ -71,6 +79,7 @@ dpkg-query -W fast-https
 先检查 80 / 443 有没有被其他程序占用：
 
 ```bash
+# 检查 80/443 是否被占用
 ss -ltn '( sport = :80 or sport = :443 )'
 ```
 
@@ -79,7 +88,9 @@ ss -ltn '( sport = :80 or sport = :443 )'
 安装包已经注册了名为 `fast-https.service` 的 **systemd 服务**。systemd 是 Linux 管理后台服务的组件，`systemctl` 是操作它的命令。
 
 ```bash
+# 启动服务
 sudo systemctl start fast-https.service
+# 确认服务正在运行
 systemctl is-active fast-https.service
 ```
 
@@ -90,6 +101,7 @@ systemctl is-active fast-https.service
 先测 HTTP：
 
 ```bash
+# 验证 HTTP 是否返回 200
 curl --noproxy '*' -fsS -o /dev/null -w 'HTTP %{http_code}\n' http://localhost/
 ```
 
@@ -98,6 +110,7 @@ curl --noproxy '*' -fsS -o /dev/null -w 'HTTP %{http_code}\n' http://localhost/
 首次启动会为 `localhost` 生成一张由本地 CA 签发的证书。下面先下载这张 CA 证书，再用它校验 HTTPS 连接：
 
 ```bash
+# 下载自签根证书并用它验证 HTTPS
 curl --noproxy '*' -fSLo fast-https-local-root.crt http://localhost/root.crt &&
 curl --noproxy '*' --cacert ./fast-https-local-root.crt \
   -fsS -o /dev/null -w 'HTTPS %{http_code} | TLS verify %{ssl_verify_result}\n' https://localhost/
@@ -118,22 +131,29 @@ curl --noproxy '*' --cacert ./fast-https-local-root.crt \
 安装包已注册 `fast-https.service`，日常用 `systemctl` 管理：
 
 ```bash
-sudo systemctl enable --now fast-https.service   # 立即启动并设置开机自启
-sudo systemctl restart fast-https.service        # 修改配置后重启
-systemctl status fast-https.service --no-pager   # 查看运行状态
-sudo journalctl -u fast-https.service -n 30 --no-pager  # 查看最近日志
+# 立即启动并设置开机自启
+sudo systemctl enable --now fast-https.service
+# 修改配置后重启
+sudo systemctl restart fast-https.service
+# 查看服务运行状态
+systemctl status fast-https.service --no-pager
+# 查看最近的服务日志
+sudo journalctl -u fast-https.service -n 30 --no-pager
 ```
 
 仅做本机测试时，验证完可以停止；`disable --now` 会同时取消开机自启：
 
 ```bash
+# 停止服务
 sudo systemctl stop fast-https.service
+# 停止并取消开机自启
 sudo systemctl disable --now fast-https.service
 ```
 
 需要卸载软件但保留配置、证书和日志时：
 
 ```bash
+# 卸载软件包
 sudo apt remove fast-https
 ```
 
@@ -141,7 +161,7 @@ sudo apt remove fast-https
 
 | 现象 | 怎么处理 |
 | --- | --- |
-| 下载时报 404 | 版本号写错了，去 releases 页核对最新的 tag 和文件名 |
+| 下载时报 404 | 复制的链接不对，或指向了旧 release；回到发行页重新复制最上面一条 release 里对应架构的附件链接 |
 | `apt` 提示找不到文件 | 确认当前目录就是安装包所在目录，命令里的 `./` 和文件名拼写要正确 |
 | `is-active` 不是 `active` | 用 `systemctl status fast-https.service --no-pager` 看报错，再查日志 |
 | curl 返回 000 或连接被拒 | 服务没起来，回到第 3 步；若改过端口，验证地址也要跟着换 |

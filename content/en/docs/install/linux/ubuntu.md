@@ -15,45 +15,53 @@ This guide deploys Fast-Https on Ubuntu from a `.deb` package. `.deb` is the pac
 - Run every command **in the server's terminal**.
 - You need an account with `sudo` privileges. `sudo` runs a single command with administrative rights and may ask for your password.
 - The default site uses **ports 80 and 443**. On a cloud server, allow both in the console first and make sure no other program (such as Nginx) occupies them — step 3 shows how to check.
-- Download the package from [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) or [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases); use the latest version shown on that page.
+- Download the package from [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) or [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases). No version number is hardcoded in this guide: pick the newest release on that page yourself, so the instructions do not go stale after a new release.
 
 ## 1 Check the architecture and download the package
 
 Different processors need different packages. Check yours:
 
 ```bash
+# Show the system architecture
 dpkg --print-architecture
 ```
 
 - `amd64` → download the package whose filename contains `amd64` (most cloud servers)
 - `arm64` → download the package whose filename contains `arm64`
 
-Download the package on the server. The example below is for `amd64`; replace the version numbers with the latest ones from the releases page:
+**Get the download link from the releases page yourself** — no version number is hardcoded here, so a new release cannot turn this into a stale link:
+
+1. Open [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) or [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases) in a browser, find the **topmost** release and expand its asset list.
+2. Pick the **server** `.deb` asset for your architecture: `amd64` needs a filename containing `linux_amd64.deb`, `arm64` needs `linux_arm64.deb`. Files starting with `fast-https-desktop` are the graphical desktop edition, not needed on a server.
+3. **Right-click the download button → copy link address**.
+4. Back in the server terminal, replace the address inside the quotes with the link you copied, then run:
 
 ```bash
-wget https://gitee.com/ncepu-bj/fast-https/releases/download/v1.6.0/fast-https_1.6.0_linux_amd64.deb
-ls -lh *.deb
+# Download the package and give it a fixed name
+wget -O fast-https.deb 'paste the copied download link here'
+# Confirm the package downloaded and its size
+ls -lh fast-https.deb
 ```
 
-`ls -lh` lists the downloaded file and its size — seeing it means the download worked. You can also click the link on the releases page and upload the file to the server instead.
+`-O fast-https.deb` gives the file one fixed name, which the install command below uses — **you never need to edit a version number anywhere in this guide**. Keep the single quotes. Seeing the file and its size means the download worked; if you prefer downloading on your own computer, upload it with `scp` or an FTP tool and rename it to `fast-https.deb`.
 
-| Architecture | Server package | Download |
+| Architecture | Filename contains | Where to download |
 | --- | --- | --- |
-| `amd64` | `fast-https_1.6.0_linux_amd64.deb` | [Gitee](https://gitee.com/ncepu-bj/fast-https/releases/download/v1.6.0/fast-https_1.6.0_linux_amd64.deb) / [GitHub](https://github.com/ncepu-iDealStudio/Fast-Https/releases/download/v1.6.0/fast-https_1.6.0_linux_amd64.deb) |
-| `arm64` | `fast-https_1.6.0_linux_arm64.deb` | [Gitee](https://gitee.com/ncepu-bj/fast-https/releases/download/v1.6.0/fast-https_1.6.0_linux_arm64.deb) / [GitHub](https://github.com/ncepu-iDealStudio/Fast-Https/releases/download/v1.6.0/fast-https_1.6.0_linux_arm64.deb) |
-
-Choose the **server package**: files starting with `fast-https-desktop` install the graphical desktop edition and are not needed on a server.
+| `amd64` | `linux_amd64.deb` | [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) / [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases) |
+| `arm64` | `linux_arm64.deb` | Same as above |
 
 ## 2 Install
 
 Go to the directory containing the downloaded package and run the commands below. The `./` prefix means "this file in the current directory" and must not be omitted:
 
 ```bash
-sudo apt install ./fast-https_1.6.0_linux_amd64.deb
+# Install the .deb package
+sudo apt install ./fast-https.deb
+# Confirm the installed package name and version
 dpkg-query -W fast-https
 ```
 
-On an `arm64` system, use the `arm64` filename from the table. `dpkg-query` prints the package name and version; seeing `fast-https` means the installation succeeded.
+The `./` prefix means "this file in the current directory" and must not be omitted. Because the download already gave the file a fixed name, both `amd64` and `arm64` use this one command. `dpkg-query` prints the package name and version; seeing `fast-https` means the installation succeeded.
 
 Installed file locations (you will need these when editing configuration or reading logs):
 
@@ -71,6 +79,7 @@ Installed file locations (you will need these when editing configuration or read
 First check whether ports 80 / 443 are already in use:
 
 ```bash
+# Check whether ports 80/443 are in use
 ss -ltn '( sport = :80 or sport = :443 )'
 ```
 
@@ -79,7 +88,9 @@ If only the header line (`State Recv-Q ...`) appears, the ports are free. If a p
 The package registers a **systemd service** named `fast-https.service`. systemd is the component that manages background services on Linux; `systemctl` is the command used to control it.
 
 ```bash
+# Start the service
 sudo systemctl start fast-https.service
+# Check whether the service is running
 systemctl is-active fast-https.service
 ```
 
@@ -90,6 +101,7 @@ The second command should print `active`, which means the service is running.
 Test HTTP first:
 
 ```bash
+# Verify HTTP returns 200
 curl --noproxy '*' -fsS -o /dev/null -w 'HTTP %{http_code}\n' http://localhost/
 ```
 
@@ -98,6 +110,7 @@ curl --noproxy '*' -fsS -o /dev/null -w 'HTTP %{http_code}\n' http://localhost/
 On the first start, Fast-Https generates a certificate for `localhost` signed by a local CA. Download that CA certificate, then use it to verify the HTTPS connection:
 
 ```bash
+# Download the self-signed root CA and verify HTTPS with it
 curl --noproxy '*' -fSLo fast-https-local-root.crt http://localhost/root.crt &&
 curl --noproxy '*' --cacert ./fast-https-local-root.crt \
   -fsS -o /dev/null -w 'HTTPS %{http_code} | TLS verify %{ssl_verify_result}\n' https://localhost/
@@ -118,22 +131,29 @@ A browser will warn that the certificate is not trusted when you open HTTPS. Tha
 The package registers `fast-https.service`, so use `systemctl` for day-to-day management:
 
 ```bash
-sudo systemctl enable --now fast-https.service   # start now and enable at boot
-sudo systemctl restart fast-https.service        # restart after a config change
-systemctl status fast-https.service --no-pager   # inspect status
-sudo journalctl -u fast-https.service -n 30 --no-pager  # read recent logs
+# Start now and enable at boot
+sudo systemctl enable --now fast-https.service
+# Restart after a config change
+sudo systemctl restart fast-https.service
+# Inspect the service status
+systemctl status fast-https.service --no-pager
+# Read recent service logs
+sudo journalctl -u fast-https.service -n 30 --no-pager
 ```
 
 For a local test you can stop the service after verification; `disable --now` also disables startup at boot:
 
 ```bash
+# Stop the service
 sudo systemctl stop fast-https.service
+# Stop and disable start at boot
 sudo systemctl disable --now fast-https.service
 ```
 
 To remove the package while keeping configuration, certificates and logs:
 
 ```bash
+# Remove the package
 sudo apt remove fast-https
 ```
 
@@ -141,7 +161,7 @@ sudo apt remove fast-https
 
 | Symptom | What to do |
 | --- | --- |
-| Download returns 404 | The version number is wrong; check the latest tag and filename on the releases page |
+| Download returns 404 | The copied link is wrong or points to an old release; go back to the releases page and copy the matching asset link from the topmost release again |
 | `apt` cannot find the file | Confirm you are in the directory with the package, and that `./` and the filename are correct |
 | `is-active` does not print `active` | Run `systemctl status fast-https.service --no-pager` for the error, then check the logs |
 | curl returns 000 or connection refused | The service is not running — go back to step 3; if you changed ports, update the verification URLs too |

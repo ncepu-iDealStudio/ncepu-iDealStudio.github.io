@@ -15,7 +15,9 @@ Once Fast-Https is installed on a Linux server, it ships a default site: open po
 Run every command on this page **in the server's terminal**, not on your own computer. Log in to the server and run:
 
 ```bash
+# Show the distribution name
 cat /etc/os-release
+# Show the processor architecture
 uname -m
 ```
 

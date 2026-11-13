@@ -14,29 +14,41 @@ This guide runs Fast-Https straight from a `.tar.gz` archive, without installing
 
 - Run every command **in the server's terminal** with administrative rights. Log in as `root`, or prefix commands with `sudo`.
 - The default site uses **ports 80 and 443**. On a cloud server, allow both in the console first and make sure no other program occupies them — step 2 shows how to check.
-- Download `fast-https_Linux_x86_64.tar.gz` from [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) or [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases); use the latest version shown on that page.
+- Download the archive (named like `fast-https_Linux_x86_64.tar.gz`) from [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) or [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases). No version number is hardcoded here — pick the newest release on that page yourself.
 
 **About the "Expected output" blocks**: every output below comes from one complete run. On that machine port 80 was already used by another site, so `listen` was changed to `18080` / `18443` as described in step 2, and the verification URLs use those ports too. If your ports 80 / 443 are free, substitute the defaults — the shape of the output is identical.
 
 ## 1 Download and unpack
 
-The block below creates directories, downloads, unpacks and makes the binary executable. `VER` is the latest tag from the releases page; `mkdir -p` creates directories, `tar -xzf` unpacks and `chmod 755` grants execute permission:
+**Get the download link from the releases page yourself** — no version number is hardcoded here, so a new release cannot turn this into a stale link:
+
+1. Open [Gitee Releases](https://gitee.com/ncepu-bj/fast-https/releases) or [GitHub Releases](https://github.com/ncepu-iDealStudio/Fast-Https/releases) in a browser, find the **topmost** release and expand its asset list.
+2. Pick the archive for your architecture: `x86_64` uses `fast-https_Linux_x86_64.tar.gz`, `aarch64` uses `fast-https_Linux_arm64.tar.gz`. **Right-click the download button → copy link address**.
+3. Replace the address inside the quotes below with the link you copied, then run the whole block:
 
 ```bash
+# Create the download and install directories
 mkdir -p /soft /usr/local/fasthttps
+# Enter the download directory
 cd /soft
-VER=v1.6.0
-wget "https://gitee.com/ncepu-bj/fast-https/releases/download/$VER/fast-https_Linux_x86_64.tar.gz"
-ls -lh fast-https_Linux_x86_64.tar.gz
-tar -xzf fast-https_Linux_x86_64.tar.gz -C /usr/local/fasthttps
+# Download the archive and give it a fixed name
+wget -O fast-https.tar.gz 'paste the copied download link here'
+# Confirm the archive downloaded and its size
+ls -lh fast-https.tar.gz
+# Unpack into the install directory
+tar -xzf fast-https.tar.gz -C /usr/local/fasthttps
+# Make the binary executable
 chmod 755 /usr/local/fasthttps/fast-https
+# List the unpacked directory
 ls -la /usr/local/fasthttps
 ```
+
+`-O fast-https.tar.gz` gives the downloaded file one fixed name, so the unpack command below never changes — **no version number to edit**. Keep the single quotes. `mkdir -p` creates directories, `tar -xzf` unpacks and `chmod 755` grants execute permission.
 
 **Expected output** (download size + unpacked directory, `ls -la` abridged)
 
 ```text
--rw-r--r-- 1 root root 6.5M Nov 10 19:52 fast-https_Linux_x86_64.tar.gz
+-rw-r--r-- 1 root root 6.5M Nov 10 19:52 fast-https.tar.gz
 total 16764
 drwxr-xr-x   6 root root 4096 Nov 10 19:52 .
 drwxr-xr-x. 14 root root 4096 Nov 10 19:52 ..
@@ -64,6 +76,7 @@ Seeing `fast-https` with `-rwxr-xr-x` permissions, plus `config` and `httpdoc`, 
 Print the resolved configuration, certificate, log and pid paths (the pid file records the process ID) with:
 
 ```bash
+# Show the config paths the program uses
 cd /usr/local/fasthttps && ./fast-https config path
 ```
 
@@ -79,7 +92,9 @@ pid    /usr/local/fasthttps/fast-https.pid
 ## 2 Check configuration and ports
 
 ```bash
+# Read the default site configuration
 cat /usr/local/fasthttps/config/conf.d/default.json
+# Check whether ports 80/443 are in use
 ss -lntp | grep -E ':(80|443)\b'
 ```
 
@@ -114,7 +129,9 @@ LISTEN     0      511       [::]:80 [::]:*   users:(("nginx",pid=7677,fd=9),...)
 No output from the second command means 80 / 443 are free; a listed process name means the port is taken. Do not stop someone else's service — change your own configuration:
 
 ```bash
+# Change the default ports to 18080/18443
 sed -i 's|"listen": \[80, "443 ssl h2"\]|"listen": [18080, "18443 ssl h2"]|' /usr/local/fasthttps/config/conf.d/default.json
+# Confirm the port change took effect
 grep -n '"listen"' /usr/local/fasthttps/config/conf.d/default.json
 ```
 
@@ -131,7 +148,9 @@ For a public deployment, set `server_name` to the domain or IP clients will use 
 ## 3 Start the server
 
 ```bash
+# Enter the install directory
 cd /usr/local/fasthttps
+# Start the service (daemonizes itself)
 ./fast-https start
 ```
 
@@ -151,9 +170,13 @@ Common subcommands: `start`, `stop`, `status`, `reload` to reapply configuration
 ## 4 Verify the default site
 
 ```bash
+# Enter the install directory
 cd /usr/local/fasthttps
+# Check the running state
 ./fast-https status
+# Verify HTTP returns 200
 curl -sS -o /dev/null -w 'HTTP %{http_code}\n' http://127.0.0.1:18080/
+# Verify HTTPS (skip self-signed cert validation)
 curl -sk -o /dev/null -w 'HTTPS %{http_code} TLS=%{ssl_verify_result}\n' https://localhost:18443/
 ```
 
@@ -170,6 +193,7 @@ HTTPS 200 TLS=0
 Confirm the listeners:
 
 ```bash
+# Show the ports the service listens on
 ss -lntp | grep -E ':(18080|18443)\b'
 ```
 
@@ -192,9 +216,13 @@ On a cloud server, open `http://<server public IP>:18080/` in a browser on your 
 ## 5 Stop and reload
 
 ```bash
+# Enter the install directory
 cd /usr/local/fasthttps
+# Reapply the configuration
 ./fast-https reload
+# Stop the service
 ./fast-https stop
+# Check the running state
 ./fast-https status
 ```
 
@@ -214,6 +242,7 @@ The archive contains no service file, so it does not start at boot by default. T
 Run this block to create the unit file (copy it as a whole; you can also write the same content with an editor into `/etc/systemd/system/fast-https.service`):
 
 ```bash
+# Create the systemd unit file (write the following verbatim)
 cat > /etc/systemd/system/fast-https.service <<'EOF'
 [Unit]
 Description=Fast-Https (archive deployment)
@@ -246,8 +275,11 @@ Three details must be correct:
 Register and start it:
 
 ```bash
+# Ask systemd to reload unit files
 systemctl daemon-reload
+# Start and enable at boot
 systemctl enable --now fast-https.service
+# Check whether the service is running
 systemctl is-active fast-https.service
 ```
 
@@ -261,6 +293,7 @@ active
 `daemon-reload` prints nothing; `Created symlink` means start-at-boot is enabled and `active` means the service is running. Check the status:
 
 ```bash
+# Inspect the service status
 systemctl status fast-https.service --no-pager
 ```
 
@@ -278,6 +311,7 @@ systemctl status fast-https.service --no-pager
 A request should still succeed:
 
 ```bash
+# Verify HTTP returns 200
 curl -sS -o /dev/null -w 'HTTP %{http_code}\n' http://127.0.0.1:18080/
 ```
 
@@ -301,7 +335,7 @@ If Fast-Https was already installed from the [.rpm package](../rpm/) or the [.de
 
 | Symptom | What to do |
 | --- | --- |
-| Download returns 404 | `VER` is wrong; check the latest tag on the releases page |
+| Download returns 404 | The copied link is wrong or points to an old release; go back to the releases page and copy the matching asset link from the topmost release again |
 | `./fast-https` reports a permission error | Re-run `chmod 755 ./fast-https` from step 1 |
 | `status` says the service is not running | Confirm you `cd`'d into the unpack directory, then read `logs/daemon.log` |
 | The port check lists nginx or another process | Follow step 2 and change `listen`; do not stop someone else's service |
